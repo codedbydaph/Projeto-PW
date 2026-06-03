@@ -1,0 +1,855 @@
+/* FILE: BN.css */
+.navbar {
+    justify-content: center;
+    box-shadow: 0 8px 15px rgb(123, 122, 122);
+}
+
+.navbar-collapse {
+    display: flex;
+    justify-content: center;
+}
+
+.navbar-nav {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
+.navbar .btn {
+    margin-left: 5px;
+}
+
+.navbar-brand {
+    margin-left: 30px;
+}
+
+.carousel-inner {
+    border-radius: 10px;
+    max-width: 90%;
+    margin: 20px auto;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+    background-color: #f4f7f9;
+}
+
+.carousel-img-custom {
+    width:500%;
+    height: 450px;
+    object-fit: cover !important;
+}
+
+.card-img-custom {
+    width: 100%;
+    height: 220px;
+    background-color: #fff;
+    padding: 10px;
+}
+
+.t1 {
+    margin-top: 40px;
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 800px;
+    padding: 0 15px;
+}
+.t1 p {
+    color: #555;
+    font-size: 1.1rem;
+    line-height: 1.6;
+}
+
+.card-group {
+    margin-top: 60px;
+    text-align: center;
+    margin: auto;
+    max-width: 800px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+}
+
+.card2 {
+    margin: 20px auto;
+    text-align: center;
+    max-width: 300px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.card-tex {
+    font-size: 14px;
+}
+
+.card-img-to {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+}
+
+.p2 {
+    color: slategray;
+    font-size: 14px;
+    text-align: center;
+    margin: auto;
+    max-width: 900px;
+}
+
+.pqadotar {
+    margin-top: 60px;
+    text-align: center;
+    margin: auto;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+    padding: 0 30px;
+}
+
+.h1video {
+    margin-left: 20px;
+    color: rgb(235, 167, 104);
+}
+
+ol {
+    font-size: 14px;
+    max-width: 500px;
+    text-align: left;
+}
+
+.porra {
+    color: rgb(235, 167, 104);
+}
+
+body {
+    font-family: 'Baloo', cursive;
+}
+
+/* FILE: css.css */
+
+body {
+    font-family:  'Baloo', cursive;
+}
+
+  .interesse {
+    text-align: center;
+    height: 80%; /* Define a altura total da página */
+    margin: 150px;    /* Remove a margem padrão */
+  }
+  .form-check{
+    background-color: rgb(235, 167, 104);
+  }
+  h2{
+    color:  rgb(235, 167, 104); ;
+  }
+  .but{
+    background-color: rgb(235, 167, 104);  ;
+  }
+
+  .logo {
+    max-width: 100%;  /* Faz a logo responsiva */
+    height: auto;     /* Mantém a proporção da imagem */
+  }
+
+  .navbar {
+    justify-content: center;
+    box-shadow: 0 8px 15px rgb(123, 122, 122);
+}
+
+/* Ajustar o alinhamento dos itens e centralizar o conteúdo */
+.navbar-collapse {
+    display: flex;
+    justify-content: center;
+}
+
+/* Centralizar o conteúdo da lista de navegação */
+.navbar-nav {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
+/* Ajuste para os botões de ação ao lado direito */
+.navbar .btn {
+    margin-left: 5px;
+}
+.navbar-brand{
+    margin-left: 30px;
+
+}
+.but{
+  background-color: rgb(235, 167, 104);  ;
+}
+
+.modal-title{
+  color:rgb(235, 167, 104);
+}
+
+/* FILE: css1.css */
+
+.card1 {
+    
+    border: 1px solid #0004ff;
+    border-radius: 15px; 
+  }
+
+  body {
+    font-family:  'Baloo', cursive;
+    background-color: #f4f4f9;
+ 
+  }
+
+  .container {
+    display: flex;
+    flex-wrap: wrap; /* Permite que os cards quebrem para a linha seguinte se não caberem */
+    justify-content: space-between; /* Espaça igualmente os cards */
+ 
+    gap: 20px; /* Espaçamento entre os cards */
+  }
+
+  .card {
+    background-color: white;
+    border-radius: 10px; /* Arredonda os cantos do card */
+    width: 22%; /* Define a largura dos cards */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Sombra suave ao redor do card */
+    overflow: hidden;
+    transition: transform 0.3s ease; /* Transição suave para o efeito de hover */
+  }
+
+  .card:hover {
+    transform: translateY(-10px); /* Efeito de elevação ao passar o mouse */
+  }
+
+  .card-img-top {
+    width: 100%;
+    height: 350PX;
+  }
+
+  .card-body {
+    padding: 15px;
+  }
+
+  .card-title {
+    font-size: 1.25rem;
+    margin: 0;
+    color: #333;
+  }
+
+  .card-text {
+    font-size: 1rem;
+    color: #777;
+    margin: 10px 0;
+  }
+
+  
+  .container-fluid1 {
+    width: 100%;       /* Garantir que ocupe 100% da largura */
+    height: 400px;     /* Garantir que ocupe 100% da altura da tela */
+    background-color: #0004ff;  /* Cor de fundo desejada */
+    margin: 0;         /* Remover qualquer margem padrão */
+    padding: 0;        /* Remover qualquer preenchimento padrão */
+}
+  p {
+    text-align: center;
+  }
+
+  .h1c {
+    text-align: center;
+  }
+
+  .navbar {
+    justify-content: center;
+    box-shadow: 0 8px 15px rgb(123, 122, 122);
+}
+
+/* Ajustar o alinhamento dos itens e centralizar o conteúdo */
+.navbar-collapse {
+    display: flex;
+    justify-content: center;
+}
+
+/* Centralizar o conteúdo da lista de navegação */
+.navbar-nav {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
+/* Ajuste para os botões de ação ao lado direito */
+.navbar .btn {
+    margin-left: 5px;
+}
+.navbar-brand{
+    margin-left: 30px;
+
+}
+
+/* FILE: faq.css */
+
+/* Definindo o estilo geral da página */
+body {
+    font-family: 'Baloo', cursive; 
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+}
+
+
+header {
+    background-color: #ff7f00; 
+    color: white;
+    text-align: center;
+    padding: 20px;
+}
+
+header h1 {
+    font-size: 2.5em; 
+}
+
+
+.faq {
+    padding: 20px;
+    max-width: 800px;
+    margin: 0 auto; 
+}
+
+.faq h2 {
+    font-size: 2em;
+    color: #ff7f00; 
+    text-align: center;
+}
+
+.faq-item {
+    background-color: white;
+    margin: 10px 0;
+    padding: 15px;
+    border-radius: 8px; 
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
+}
+
+.faq-item h3 {
+    font-size: 1.6em;
+    color: #007bff; 
+    margin-bottom: 10px;
+}
+
+.faq-item p {
+    font-size: 1.1em;
+    color: #333; 
+}
+
+/* Estilos para o rodapé */
+footer {
+    background-color: #007bff; 
+    color: white;
+    text-align: center;
+    padding: 10px;
+    position: fixed;
+    width: 100%;
+    bottom: 0;
+}
+
+footer a {
+    color: white;
+    text-decoration: none;
+}
+.logo {
+    max-width: 100%;  /* Faz a logo responsiva */
+    height: auto;     /* Mantém a proporção da imagem */
+  }
+
+  .navbar {
+    justify-content: center;
+    box-shadow: 0 8px 15px rgb(123, 122, 122);
+}
+
+/* Ajustar o alinhamento dos itens e centralizar o conteúdo */
+.navbar-collapse {
+    display: flex;
+    justify-content: center;
+}
+
+/* Centralizar o conteúdo da lista de navegação */
+.navbar-nav {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
+/* Ajuste para os botões de ação ao lado direito */
+.navbar .btn {
+    margin-left: 5px;
+}
+.navbar-brand{
+    margin-left: 30px;
+}
+
+/* FILE: fim.css */
+
+body {
+    font-family: 'Baloo', cursive; 
+    background-color: #f4f7f9; 
+    margin: 0;
+    padding: 0;
+}
+
+
+header {
+    background-color: #ffb74d; 
+    color: white;
+    text-align: center;
+    padding: 20px;
+}
+
+header h1 {
+    font-size: 2.5em;
+}
+
+
+.conteudo {
+    background-color: white;
+    padding: 30px;
+    max-width: 800px;
+    margin: 20px auto;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.conteudo h2 {
+    color: #007bff; 
+    text-align: center;
+    font-size: 2em;
+    margin-bottom: 20px;
+}
+
+.conteudo p {
+    font-size: 1.2em;
+    color: #333;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.logo {
+    max-width: 100%;  /* Faz a logo responsiva */
+    height: auto;     /* Mantém a proporção da imagem */
+  }
+
+  .navbar {
+    justify-content: center;
+    box-shadow: 0 8px 15px rgb(123, 122, 122);
+}
+
+/* Ajustar o alinhamento dos itens e centralizar o conteúdo */
+.navbar-collapse {
+    display: flex;
+    justify-content: center;
+}
+
+/* Centralizar o conteúdo da lista de navegação */
+.navbar-nav {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
+/* Ajuste para os botões de ação ao lado direito */
+.navbar .btn {
+    margin-left: 5px;
+}
+.navbar-brand{
+    margin-left: 30px;
+}
+img{
+    max-width: 300px;
+    justify-items: center;
+    align-items: center;
+    margin: auto;
+    display: flex;
+}
+
+
+
+
+
+
+/*FILE: form.css*/
+
+.logo {
+    max-width: 100%;  /* Faz a logo responsiva */
+    height: auto;     /* Mantém a proporção da imagem */
+  }
+
+  .navbar {
+    justify-content: center;
+    box-shadow: 0 8px 15px rgb(123, 122, 122);
+}
+
+/* Ajustar o alinhamento dos itens e centralizar o conteúdo */
+.navbar-collapse {
+    display: flex;
+    justify-content: center;
+}
+
+/* Centralizar o conteúdo da lista de navegação */
+.navbar-nav {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
+/* Ajuste para os botões de ação ao lado direito */
+.navbar .btn {
+    margin-left: 5px;
+}
+.navbar-brand{
+    margin-left: 30px;
+
+}
+body{
+    font-family:  'Baloo', cursive;
+
+}
+h2{
+    color: rgb(235, 167, 104); 
+    text-align: center;
+}
+form {
+    margin: 3%;
+}
+.but{
+    background-color: rgb(235, 167, 104); 
+}
+
+/* css do  form2 */
+
+textarea {
+  width: 100%;
+  padding: 12px;
+  font-size: 16px;
+  border: 2px solid #ccc;
+  border-radius: 8px;
+  resize: none;
+  background-color: #fafafa;
+  color: #333;
+}
+
+textarea:focus {
+  border-color:  rgb(235, 167, 104); ;
+  outline: none;
+}
+
+
+
+/*FILE: form2.css*/
+
+textarea {
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+    border: 2px solid #ccc;
+    border-radius: 8px;
+    resize: none;
+    background-color: #fafafa;
+    color: #333;
+  }
+  
+  textarea:focus {
+    border-color:  rgb(235, 167, 104); ;
+    outline: none;outline: none;
+  }
+  body {
+    font-family:  font-family  'Baloo', cursive;
+    text-align: center;
+  }
+
+  .logo {
+    max-width: 100%;  /* Faz a logo responsiva */
+    height: auto;     /* Mantém a proporção da imagem */
+  }
+
+  .navbar {
+    justify-content: center;
+    box-shadow: 0 8px 15px rgb(123, 122, 122);
+}
+
+/* Ajustar o alinhamento dos itens e centralizar o conteúdo */
+.navbar-collapse {
+    display: flex;
+    justify-content: center;
+}
+
+/* Centralizar o conteúdo da lista de navegação */
+.navbar-nav {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
+/* Ajuste para os botões de ação ao lado direito */
+.navbar .btn {
+    margin-left: 5px;
+}
+.navbar-brand{
+    margin-left: 30px;
+}
+.text{
+    font-family: 'Baloo', cursive ;
+    color:  rgb(235, 167, 104);
+    
+}
+.but{
+    background-color:  rgb(235, 167, 104);;
+    font-family: 'Baloo', cursive ;
+}
+body{
+   font-family: 'Baloo', cursive ;
+    background-color: rgb(255, 255, 255);
+}
+
+/*FILE: pag1.css*/
+body {
+    font-family:  'Baloo', cursive;
+
+  }
+
+  .interesse {
+    text-align: center;
+    height: 80%; /* Define a altura total da página */
+    margin: 150px;    /* Remove a margem padrão */
+  }
+  .form-check{
+    background-color: rgb(235, 167, 104);
+  }
+  h2{
+    color:  rgb(235, 167, 104); ;
+  }
+  .but{
+    background-color: rgb(235, 167, 104);  ;
+  }
+
+  .logo {
+    max-width: 100%;  /* Faz a logo responsiva */
+    height: auto;     /* Mantém a proporção da imagem */
+  }
+
+  .navbar {
+    justify-content: center;
+    box-shadow: 0 8px 15px rgb(123, 122, 122);
+}
+
+/* Ajustar o alinhamento dos itens e centralizar o conteúdo */
+.navbar-collapse {
+    display: flex;
+    justify-content: center;
+}
+
+/* Centralizar o conteúdo da lista de navegação */
+.navbar-nav {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
+/* Ajuste para os botões de ação ao lado direito */
+.navbar .btn {
+    margin-left: 5px;
+}
+.navbar-brand{
+    margin-left: 30px;
+
+}
+.but{
+  background-color: rgb(235, 167, 104);  ;
+}
+
+.modal-title{
+  color:rgb(235, 167, 104);
+}
+
+/* FILE: pet.css */
+
+   /* Definindo a fonte para a página */
+body {
+    font-family: 'Baloo', cursive; /* Usando a fonte Baloo Cursive */
+    background-color: #f4f7f9; /* Cor de fundo clara para a página */
+    margin: 0;
+    padding: 0;
+}
+
+/* Estilos para o cabeçalho */
+header {
+    background-color: #ffb74d; /* Laranja claro */
+    color: white;
+    text-align: center;
+    padding: 20px;
+}
+
+header h1 {
+    font-size: 2.5em;
+}
+
+/* Estilos para o conteúdo do formulário */
+.form-container {
+    background-color: white;
+    padding: 30px;
+    max-width: 800px;
+    margin: 20px auto;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+h2 {
+    color: #007bff; /* Azul */
+    text-align: center;
+    font-size: 1.8em;
+    margin-bottom: 20px;
+}
+
+/* Estilo do formulário */
+.pet-form {
+    margin: 10px;
+    margin-bottom: 50px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.pet-form label {
+    display: block;      /* Garante que o label ocupe toda a largura disponível */
+    text-align: left;    /* Alinha o texto do label à esquerda */
+    margin-bottom: 5px;
+    font-size: 1.2em;
+    color: #333;
+}
+
+.pet-form input,
+.pet-form select,
+.pet-form textarea {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 1.1em;
+}
+
+.pet-form input[type="url"] {
+    font-size: 1.1em;
+}
+
+.pet-form button {
+    background-color: #ffb74d; /* Laranja claro */
+    color: white;
+    padding: 15px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.2em;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.pet-form button:hover {
+    background-color: #ff9800; /* Laranja mais forte */
+}
+
+/* Estilos para o rodapé */
+footer {
+    background-color: #007bff; /* Azul */
+    color: white;
+    text-align: center;
+    padding: 10px;
+}
+
+footer a {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+}
+.logo {
+    max-width: 100%;  /* Faz a logo responsiva */
+    height: auto;     /* Mantém a proporção da imagem */
+  }
+
+  .navbar {
+    justify-content: center;
+    box-shadow: 0 8px 15px rgb(123, 122, 122);
+}
+
+/* Ajustar o alinhamento dos itens e centralizar o conteúdo */
+.navbar-collapse {
+    display: flex;
+    justify-content: center;
+}
+
+/* Centralizar o conteúdo da lista de navegação */
+.navbar-nav {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
+/* Ajuste para os botões de ação ao lado direito */
+.navbar .btn {
+    margin-left: 5px;
+}
+.navbar-brand{
+    margin-left: 30px;
+}
+
+/* FILE: qp.css*/
+body {
+    font-family:  'Baloo', cursive;
+    background-color: rgb(255, 255, 255);
+    margin: 0;
+    padding: 0;
+  }
+.p1{
+    text-align: center;
+    margin: auto;
+    max-width: 900px;
+}
+.btnform{
+    text-align: center;
+    margin: auto;
+    max-width: 100%;
+}
+.row2{
+    display:flex ;
+}
+.formq{
+    
+    color: rgb(59, 120, 252);
+}
+.h1qf{
+    margin-top: 20px;
+    color: orange;
+}
+#butaof{
+    background-color:orange;
+    
+}
+
+/*banner tela quero adotar*/
+.banner-adocao {
+    background-color: #dcedf6; 
+    border-radius: 4px; 
+    padding: 30px 40px; 
+    margin: 20px auto 40px auto; 
+    max-width: 95%;  
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+.banner-adocao .h1c {
+    color: #0b5361;           
+    font-size: 2.25rem;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+.banner-adocao p {
+    color: #084854;        
+    font-size: 1.1rem;
+    font-weight: 600;    
+    line-height: 1.6;      
+    max-width: 1200px;         
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 15px;
+}
