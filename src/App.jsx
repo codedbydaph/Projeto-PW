@@ -1,5 +1,8 @@
 import React from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+
+import { AuthProvider } from "./contexts/AuthContext";
+import { PrivateRoute } from "./components/PrivateRoute";
 
 import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
@@ -15,20 +18,26 @@ import Concluido from "./pages/Concluido";
 function App() {
   return (
     <BrowserRouter>
+      <AuthProvider>
+        <Navbar />
 
-      <Navbar />
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/voluntario" element={<Voluntario />} />
+          <Route path="/como" element={<Como />} />
 
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/pets" element={<Pets />} />
-        <Route path="/usuarios" element={<Usuarios />} />
-        <Route path="/adocoes" element={<Adocoes />} />
-        <Route path="/relatorio" element={<Relatorio />} />
-        <Route path="/voluntario" element={<Voluntario />} />
-        <Route path="/como" element={<Como />} />
-        <Route path="/concluido" element={<Concluido />} />
-      </Routes>
+          <Route element={<PrivateRoute />}>
+            <Route path="/pets" element={<Pets />} />
+            <Route path="/usuarios" element={<Usuarios />} />
+            <Route path="/adocoes" element={<Adocoes />} />
+            <Route path="/relatorio" element={<Relatorio />} />
+            <Route path="/concluido" element={<Concluido />} />
+          </Route>
+
+        </Routes>
+      </AuthProvider>
+      
     </BrowserRouter>
   );
 }
