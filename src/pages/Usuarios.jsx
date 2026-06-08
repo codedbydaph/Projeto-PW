@@ -5,7 +5,7 @@ import '../style/global.css';
 function Usuarios() {
   const navigate = useNavigate();
 
-  // 1. Estado para os campos do formulário
+  // Estado para os campos do formulário
   const [formData, setFormData] = useState({
     id: null,
     nome: "",
@@ -32,7 +32,6 @@ function Usuarios() {
   const handleInputChange = (e) => {
     const { id, value } = e.target;
     
-    // Mapeia o id do elemento HTML para a chave correspondente do estado
     const fieldMap = {
       inputNome: "nome",
       inputSobrenome: "sobrenome",
@@ -49,7 +48,7 @@ function Usuarios() {
     });
   };
 
-  // 2. Função para Criar ou Atualizar (CREATE & UPDATE)
+  // Função para Criar ou Atualizar (CREATE & UPDATE)
   const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -61,42 +60,37 @@ function Usuarios() {
     let listaAtualizada;
 
     if (formData.id) {
-      // UPDATE: Se já tem ID, estamos editando um existente
+      // UPDATE
       listaAtualizada = adotantes.map((adotante) =>
         adotante.id === formData.id ? formData : adotante
       );
       alert("Cadastro atualizado com sucesso!");
     } else {
-      // CREATE: Se não tem ID, gera um novo com base no timestamp
+      // CREATE
       const novoAdotante = { ...formData, id: Date.now() };
       listaAtualizada = [...adotantes, novoAdotante];
       alert("Cadastro realizado com sucesso!");
     }
 
-    // Salva na lista do estado e persiste no localStorage
     setAdotantes(listaAtualizada);
     localStorage.setItem("adotantes", JSON.stringify(listaAtualizada));
-
-    // Limpa o formulário
     limparFormulario();
-
-    // Redireciona para a página de concluído (opcional, remova se preferir ver a lista na hora)
     navigate("/concluido");
   };
 
-  // 3. Função para carregar os dados no formulário para Edição (READ para edição)
+  // Função para carregar os dados no formulário para Edição
   const handleEdit = (adotante) => {
     setFormData(adotante);
+    window.scrollTo({ top: 0, behavior: 'smooth' }); // Sobe a página suavemente para o formulário
   };
 
-  // 4. Função para deletar um adotante (DELETE)
+  // Função para deletar um adotante (DELETE)
   const handleDelete = (id) => {
     if (window.confirm("Tem certeza que deseja excluir este adotante?")) {
       const listaFiltrada = adotantes.filter((adotante) => adotante.id !== id);
       setAdotantes(listaFiltrada);
       localStorage.setItem("adotantes", JSON.stringify(listaFiltrada));
       
-      // Se estivesse editando o usuário excluído, limpa o formulário
       if (formData.id === id) {
         limparFormulario();
       }
@@ -125,7 +119,6 @@ function Usuarios() {
       <section className="form-container">
         <h2>{formData.id ? "Editando suas informações" : "Queremos saber mais sobre você"}</h2>
 
-        {/* Formulário com onSubmit controlado */}
         <form className="pet-form" onSubmit={handleSubmit}>
           
           <label htmlFor="inputNome">Nome:</label>
@@ -201,12 +194,13 @@ function Usuarios() {
             onChange={handleInputChange}
           />
 
-          <div style={{ display: 'flex', gap: '10px', marginTop: '15px' }}>
-            <button type="submit" style={{ width: '100%' }}>
+          {/* Grupo de botões do formulário */}
+          <div className="form-buttons-group">
+            <button type="submit" className="btn-submit">
               {formData.id ? "Salvar Alterações" : "Confirmar Cadastro"}
             </button>
             {formData.id && (
-              <button type="button" onClick={limparFormulario} style={{ width: '50%', backgroundColor: '#aaa' }}>
+              <button type="button" className="btn-cancel" onClick={limparFormulario}>
                 Cancelar
               </button>
             )}
@@ -214,30 +208,31 @@ function Usuarios() {
         </form>
       </section>
 
-      {/* Seção visual para LISTAR os Adotantes cadastrados (READ) */}
-      <section className="form-container" style={{ marginTop: '30px' }}>
+      {/* Nova seção para LISTAR os Adotantes cadastrados (READ) */}
+      <section className="form-container list-container">
         <h2>Adotantes Cadastrados</h2>
         {adotantes.length === 0 ? (
-          <p>Nenhum adotante cadastrado ainda.</p>
+          <p className="no-data">Nenhum adotante cadastrado ainda.</p>
         ) : (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '15px', marginTop: '15px' }}>
+          <div className="cards-grid">
             {adotantes.map((adotante) => (
-              <div key={adotante.id} style={{ border: '1px solid #ccc', padding: '15px', borderRadius: '8px', background: '#f9f9f9' }}>
+              <div key={adotante.id} className="adotante-card">
                 <p><strong>Nome:</strong> {adotante.nome} {adotante.sobrenome}</p>
                 <p><strong>Cidade/Estado:</strong> {adotante.cidade} - {adotante.estado}</p>
+                <p><strong>CEP:</strong> {adotante.cep}</p>
                 
-                <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
+                <div className="card-actions">
                   <button 
                     type="button" 
+                    className="btn-edit"
                     onClick={() => handleEdit(adotante)} 
-                    style={{ backgroundColor: '#4CAF50', color: 'white', padding: '5px 10px', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
                   >
                     Editar
                   </button>
                   <button 
                     type="button" 
+                    className="btn-delete"
                     onClick={() => handleDelete(adotante.id)} 
-                    style={{ backgroundColor: '#f44336', color: 'white', padding: '5px 10px', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
                   >
                     Excluir
                   </button>
