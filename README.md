@@ -1,16 +1,13 @@
-# React + Vite
+# 🐾 Cafofo dos Peludos — Sistema de Gestão de Adoções
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## 📌 Sobre o Projeto
+O **Cafofo dos Peludos** é uma aplicação Web desenvolvida em **React** criada com o objetivo de apoiar e otimizar a rotina de abrigos de animais na gestão de suas operações diárias. O sistema funciona como uma plataforma integrada que conecta animais resgatados a possíveis adotantes, permitindo o controle completo desde o acolhimento até a consolidação do processo de adoção.
 
-Currently, two official plugins are available:
+A plataforma foi projetada para oferecer uma experiência de usuário (UX) limpa, responsiva e fluida, transformando telas estáticas em componentes dinâmicos e reativos, garantindo total controle de acesso às funcionalidades administrativas.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## 🚀 Escopo Técnico & Funcionalidades
+A aplicação foi construída utilizando boas práticas de componentização e gerenciamento de estado global em React, cobrindo os seguintes pilares estratégicos:
 
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+* **🔐 Controle de Acesso Seguro:** Sistema de autenticação simulado utilizando Context API e controle de sessão via `localStorage`, incluindo barramento estrito de rotas privadas para usuários não autenticados.
+* **🗂️ Gestão Descentralizada (CRUDs):** Operações completas de Criação, Leitura, Atualização e Exclusão (CRUD) para o gerenciamento de **Pets**, **Adotantes/Usuários** e o fluxo relacional de **Adoções**.
+* **📊 Relatórios Gerenciais (JOIN):** Tela exclusiva de auditoria que simula um relacionamento `JOIN` em banco de dados, cruzando chaves estrangeiras (`id`) em tempo real para exibir dados unificados e transparentes sobre as adoções concluídas.
