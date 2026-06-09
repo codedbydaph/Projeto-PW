@@ -51,9 +51,6 @@ function Adocoes() {
   const getPetName = (id) => availablePets.find(p => p.id === id)?.nome || "Pet não encontrado";
   const getUsuarioName = (id) => availableUsuarios.find(u => u.id === id)?.nome || "Adotante não encontrado";
 
-  // --- 🔥 REGRA DE NEGÓCIO: FILTRAR PETS ADOTADOS ---
-  // Se o pet já está na lista de adoções, ele não aparece no select.
-  // Se estiver editando, o pet daquela adoção específica pode aparecer para ser selecionado.
   const petsDisponiveisParaAdocao = availablePets.filter((pet) => {
     const jaAdotado = adocoes.some((adocao) => adocao.petId === pet.id);
     if (idEdicao) {

@@ -1,7 +1,6 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 
-//add os imports de baixo e fiquei meio pah de tirar os de cima pq nao sei oq fazem
 
 //importando bootstrap por causa da navbar
 import 'bootstrap/dist/css/bootstrap.min.css';
