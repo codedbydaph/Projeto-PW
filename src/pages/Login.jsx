@@ -23,7 +23,7 @@ function Login() {
     }
 
     login(email, password);
-    navigate('/adocoes');
+    navigate('/catalogo');
   };
 
   return (
