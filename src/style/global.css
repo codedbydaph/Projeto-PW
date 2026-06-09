@@ -1098,3 +1098,127 @@ body {
 .btn-delete:hover {
   background-color: #da190b;
 }
+
+/* Página Seja Voluntário */
+
+.voluntario-page {
+  min-height: 85vh;
+  background: #fff8ef;
+  padding-bottom: 50px;
+}
+
+.voluntario-hero {
+  background: linear-gradient(135deg, #ffb35c, #ffd59b);
+  padding: 60px 20px;
+  text-align: center;
+  color: #5e3b20;
+}
+
+.voluntario-hero h1 {
+  font-size: 42px;
+  font-weight: bold;
+  margin-bottom: 12px;
+}
+
+.voluntario-hero p {
+  max-width: 700px;
+  margin: 0 auto;
+  font-size: 18px;
+}
+
+.voluntario-container {
+  width: 90%;
+  max-width: 1100px;
+  margin: 45px auto 0;
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 35px;
+  align-items: start;
+}
+
+.voluntario-info,
+.voluntario-form {
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 32px;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.1);
+}
+
+.voluntario-info h2,
+.voluntario-form h2 {
+  color: #6b4b36;
+  margin-bottom: 18px;
+  font-weight: bold;
+}
+
+.voluntario-info p {
+  color: #665b55;
+  line-height: 1.6;
+}
+
+.voluntario-info ul {
+  padding-left: 20px;
+  margin-top: 18px;
+}
+
+.voluntario-info li {
+  margin-bottom: 10px;
+  color: #5f514a;
+}
+
+.voluntario-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.voluntario-form label {
+  color: #6b4b36;
+  font-weight: 600;
+  margin-bottom: 6px;
+  margin-top: 12px;
+}
+
+.voluntario-form input,
+.voluntario-form select,
+.voluntario-form textarea {
+  border: 2px solid #ead8c5;
+  border-radius: 10px;
+  padding: 12px 14px;
+  font-size: 15px;
+  outline: none;
+  resize: none;
+}
+
+.voluntario-form input:focus,
+.voluntario-form select:focus,
+.voluntario-form textarea:focus {
+  border-color: #ff9f43;
+  box-shadow: 0 0 0 3px rgba(255, 159, 67, 0.18);
+}
+
+.voluntario-form button {
+  margin-top: 24px;
+  padding: 14px;
+  border: none;
+  border-radius: 10px;
+  background-color: #ff9f43;
+  color: #ffffff;
+  font-weight: bold;
+  font-size: 16px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.voluntario-form button:hover {
+  background-color: #f08b2b;
+}
+
+@media (max-width: 768px) {
+  .voluntario-container {
+    grid-template-columns: 1fr;
+  }
+
+  .voluntario-hero h1 {
+    font-size: 32px;
+  }
+}
