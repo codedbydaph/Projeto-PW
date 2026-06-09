@@ -58,15 +58,21 @@ function Navbar() {
 
           {signed && (
             <>
-              <li className="nav-item">
-                <Link className="nav-link" to="/relatorio">Relatórios</Link>
-              </li>
-            </>
+            <li className="nav-item dropdown">
+            <a className="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">Controle (ADM)</a>
+
+            <div className="dropdown-menu">
+              <Link className="dropdown-item" to="/relatorio">Relatórios (JOIN)</Link>
+              
+              <Link className="dropdown-item" to="/crud3">Adoção (CRUD3)</Link>
+            </div>
+          </li>
+          </>
           )}
         </ul>
 
         {/* Botões do lado direito da Navbar */}
-        <Link to="/adocoes" className="btn btn-outline-info me-2" >Quero adotar</Link>
+        <Link to="/catalogo" className="btn btn-outline-info me-2" >Animais</Link>
 
         <Link to="/voluntario" className="btn btn-outline-warning me-2">Seja voluntário</Link>
 

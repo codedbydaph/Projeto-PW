@@ -1,153 +1,240 @@
-import React from "react";
-import { Link } from "react-router-dom";
-import '../style/global.css';
+import React, { useState, useEffect } from "react";
 
 function Adocoes() {
+  const [adocoes, setAdocoes] = useState([]);
+  const [petId, setPetId] = useState("");
+  const [usuarioId, setUsuarioId] = useState("");
+  const [dataAdocao, setDataAdocao] = useState("");
+  const [idEdicao, setIdEdicao] = useState(null);
+  const [error, setError] = useState("");
+
+  const [availablePets, setAvailablePets] = useState([]);
+  const [availableUsuarios, setAvailableUsuarios] = useState([]);
+
+  useEffect(() => {
+    const adocoesSalvas = localStorage.getItem("@CafofoPeludos:adocoes");
+    if (adocoesSalvas) setAdocoes(JSON.parse(adocoesSalvas));
+
+    const petsSalvos = localStorage.getItem("@CafofoPeludos:pets");
+    if (petsSalvos) {
+      setAvailablePets(JSON.parse(petsSalvos));
+    } else {
+      const mockPets = [
+        { id: "p1", nome: "Alex", especie: "Gato/Cachorro", idade: "6 meses" },
+        { id: "p2", nome: "Sicha", especie: "Gato/Cachorro", idade: "3 meses" },
+        { id: "p3", nome: "Mel", especie: "Gato/Cachorro", idade: "8 meses" },
+        { id: "p4", nome: "Rosa", especie: "Gato/Cachorro", idade: "1 ano" },
+        { id: "p5", nome: "Bob", especie: "Gato/Cachorro", idade: "10 meses" },
+        { id: "p6", nome: "Will", especie: "Gato/Cachorro", idade: "2 anos" },
+        { id: "p7", nome: "Chavosa", especie: "Gato/Cachorro", idade: "3 anos" },
+        { id: "p8", nome: "Leo", especie: "Gato/Cachorro", idade: "6 meses" },
+        { id: "p9", nome: "João", especie: "Gato/Cachorro", idade: "10 meses" },
+        { id: "p10", nome: "3 Marias", especie: "Gato/Cachorro", idade: "1 ano" },
+        { id: "p11", nome: "Melo", especie: "Gato/Cachorro", idade: "3 anos" },
+        { id: "p12", nome: "Let", especie: "Gato/Cachorro", idade: "6 meses" }
+      ];
+      setAvailablePets(mockPets);
+    }
+
+    const usuariosSalvos = localStorage.getItem("@CafofoPeludos:usuarios");
+    if (usuariosSalvos) {
+      setAvailableUsuarios(JSON.parse(usuariosSalvos));
+    } else {
+      const mockUsuarios = [
+        { id: "u1", nome: "Maria (Teste)" },
+        { id: "u2", nome: "João (Teste)" }
+      ];
+      setAvailableUsuarios(mockUsuarios);
+    }
+  }, []);
+
+  const getPetName = (id) => availablePets.find(p => p.id === id)?.nome || "Pet não encontrado";
+  const getUsuarioName = (id) => availableUsuarios.find(u => u.id === id)?.nome || "Adotante não encontrado";
+
+  // --- 🔥 REGRA DE NEGÓCIO: FILTRAR PETS ADOTADOS ---
+  // Se o pet já está na lista de adoções, ele não aparece no select.
+  // Se estiver editando, o pet daquela adoção específica pode aparecer para ser selecionado.
+  const petsDisponiveisParaAdocao = availablePets.filter((pet) => {
+    const jaAdotado = adocoes.some((adocao) => adocao.petId === pet.id);
+    if (idEdicao) {
+      const petEmEdicao = adocoes.find(a => a.id === idEdicao)?.petId;
+      if (pet.id === petEmEdicao) return true;
+    }
+    return !jaAdotado;
+  });
+
+  const salvarLocalStorage = (listaAtualizada) => {
+    setAdocoes(listaAtualizada);
+    localStorage.setItem("@CafofoPeludos:adocoes", JSON.stringify(listaAtualizada));
+  };
+
+  const limparFormulario = () => {
+    setPetId("");
+    setUsuarioId("");
+    setDataAdocao("");
+    setIdEdicao(null);
+    setError("");
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    setError("");
+
+    if (!petId || !usuarioId || !dataAdocao) {
+      setError("Por favor, selecione o Pet, o Adotante e a Data.");
+      return;
+    }
+
+    if (idEdicao) {
+      const listaEditada = adocoes.map((item) =>
+        item.id === idEdicao ? { ...item, petId, usuarioId, dataAdocao } : item
+      );
+      salvarLocalStorage(listaEditada);
+    } else {
+      const novaAdocao = {
+        id: Date.now().toString(),
+        petId,
+        usuarioId,
+        dataAdocao
+      };
+      salvarLocalStorage([...adocoes, novaAdocao]);
+    }
+
+    limparFormulario();
+  };
+
+  const handleEdit = (item) => {
+    setIdEdicao(item.id);
+    setPetId(item.petId);
+    setUsuarioId(item.usuarioId);
+    setDataAdocao(item.dataAdocao);
+  };
+
+  const handleDelete = (id) => {
+    if (window.confirm("Deseja realmente cancelar este registro de adoção?")) {
+      const listaFiltrada = adocoes.filter((item) => item.id !== id);
+      salvarLocalStorage(listaFiltrada);
+    }
+  };
+
   return (
-    <>
-      <div className="banner-adocao">
-        <h1 className="h1c">Campanha de adoção</h1>
-        <p>
-          No Cafofo dos Peludos, acreditamos que cada animal merece uma chance de ser amado. Somos um abrigo dedicado a acolher aqueles que não tiveram um começo fácil, mas que, com o apoio de pessoas como você, podem encontrar um novo lar e um futuro cheio de carinho.
-        </p>
+    <div className="container-fluid w-100 px-4 mt-5" style={{ minHeight: "80vh" }}>
+      <div className="row d-flex flex-row justify-content-between align-items-start m-0 w-100">
         
-        <p>
-          Nosso objetivo é criar um mundo onde todos os animais tenham um lar seguro e cheio de amor. Junte-se a nós nessa missão!
-        </p>
+        {/* COLUNA DO FORMULÁRIO */}
+        <div className="col-12 col-md-4 mb-4" style={{ minWidth: "300px" }}>
+          <div className="card p-4 shadow-sm" style={{ width: "100%", display: "block" }}>
+            <h4 className="card-title text-center mb-4" style={{ whiteSpace: "nowrap" }}>
+              {idEdicao ? "✏️ Editar Adoção" : "🤝 Vincular Adoção"}
+            </h4>
+
+            {error && <div className="alert alert-danger py-2">{error}</div>}
+
+            <form onSubmit={handleSubmit}>
+              <div className="mb-3 text-start">
+                <label className="form-label d-block text-muted fw-bold">Selecione o Peludo</label>
+                <select
+                  className="form-select w-100"
+                  value={petId}
+                  onChange={(e) => setPetId(e.target.value)}
+                >
+                  <option value="">Escolha um pet...</option>
+                  {/* Usa a lista filtrada aqui */}
+                  {petsDisponiveisParaAdocao.map(pet => (
+                    <option key={pet.id} value={pet.id}>{pet.nome}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="mb-3 text-start">
+                <label className="form-label d-block text-muted fw-bold">Selecione o Adotante</label>
+                <select
+                  className="form-select w-100"
+                  value={usuarioId}
+                  onChange={(e) => setUsuarioId(e.target.value)}
+                >
+                  <option value="">Escolha um adotante...</option>
+                  {availableUsuarios.map(user => (
+                    <option key={user.id} value={user.id}>{user.nome}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="mb-3 text-start">
+                <label className="form-label d-block text-muted fw-bold">Data da Adoção</label>
+                <input
+                  type="date"
+                  className="form-control w-100"
+                  value={dataAdocao}
+                  onChange={(e) => setDataAdocao(e.target.value)}
+                />
+              </div>
+
+              <button type="submit" className="btn btn-info w-100 fw-bold mb-2 text-white">
+                {idEdicao ? "Atualizar Vínculo" : "Confirmar Adoção 🐾"}
+              </button>
+
+              {idEdicao && (
+                <button type="button" className="btn btn-light w-100" onClick={limparFormulario}>
+                  Cancelar
+                </button>
+              )}
+            </form>
+          </div>
+        </div>
+
+        {/* COLUNA DA LISTAGEM DAS ADOÇÕES */}
+        <div className="col-12 col-md-8 mb-4 flex-grow-1 ps-md-4">
+          <div className="card p-4 shadow-sm w-100" style={{ display: "block" }}>
+            <h4 className="mb-4 text-start">📋 Histórico de Adoções Diretas</h4>
+            
+            {adocoes.length === 0 ? (
+              <div className="text-muted text-center my-5 py-4">
+                <span style={{ fontSize: "2rem" }}>🐾</span>
+                <p className="mt-2">Nenhuma adoção registrada ainda.</p>
+              </div>
+            ) : (
+              <div className="table-responsive w-100">
+                <table className="table table-hover align-middle w-100">
+                  <thead className="table-light">
+                    <tr>
+                      <th style={{ minWidth: "150px" }}>Quem Adotou</th>
+                      <th style={{ minWidth: "150px" }}>Peludo Escolhido</th>
+                      <th style={{ minWidth: "100px" }}>Data</th>
+                      <th className="text-end" style={{ minWidth: "140px" }}>Ações</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {adocoes.map((item) => (
+                      <tr key={item.id}>
+                        <td className="fw-bold text-start">{getUsuarioName(item.usuarioId)}</td>
+                        <td className="text-start"><span className="badge bg-info">{getPetName(item.petId)}</span></td>
+                        <td className="text-start">{item.dataAdocao.split('-').reverse().join('/')}</td>
+                        <td className="text-end">
+                          <button
+                            className="btn btn-sm btn-outline-primary me-2"
+                            onClick={() => handleEdit(item)}
+                          >
+                            Editar
+                          </button>
+                          <button
+                            className="btn btn-sm btn-outline-danger"
+                            onClick={() => handleDelete(item.id)}
+                          >
+                            Excluir
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+        </div>
+
       </div>
-
-
-      <h3>Pets disponíveis</h3>
-        {/* cards dos pets */}
-      <div className="container">
-        <div className="card">
-          <img className="card-img-top" src="img/alex.png" alt="Imagem de capa do card" />
-          <div className="card-body">
-            <h5 className="card-title">Alex</h5>
-            <p className="card-text"> 6 meses, Brasília DF,<br />
-             Alex é o explorador do grupo!  </p>
-             <Link className= "btn btn-info" to="/usuarios" > Quero Adotar </Link>
-          </div>
-        </div>
-
-        <div className="card">
-          <img className="className-img-top" src="img/sicha.png" alt="Imagem de capa do card" />
-          <div className="card-body">
-            <h5 className="card-title">Sicha</h5>
-            <p className="card-text">3 meses, Brasília DF, <br />
-                Sicha é pura fofura! Meiga e carinhosa, ela adora um carinho!
-            </p>
-            <Link className= "btn btn-info" to="/usuarios" > Quero Adotar </Link>
-          </div>
-        </div>
-
-        <div className="card">
-          <img className="card-img-top" src="img/Mel.png" alt="Imagem de capa do card" />
-          <div className="card-body">
-            <h5 className="card-title">Mel</h5>
-            <p className="card-text">8 Meses, Brasília DF, <br />
-                Mel é um encanto! Alegre e delicada.
-            </p>
-            <Link className= "btn btn-info" to="/usuarios" > Quero Adotar </Link>
-          </div>
-        </div>
-
-        <div className="card">
-          <img className="card-img-top" src="img/Rosa.png" alt="Imagem de capa do card" />
-          <div className="card-body">
-            <h5 className="card-title">Rosa</h5>
-            <p className="card-text">1 ano, Brasília DF, <br />
-                Rosa é um amor!
-            </p>
-            <Link className= "btn btn-info" to="/usuarios" > Quero Adotar </Link>
-          </div>
-        </div>
-      </div>
-
-      <div className="container"> 
-        <div className="card">
-          <img className="card-img-top" src="img/bob.png" alt="Imagem de capa do card" />
-          <div className="card-body">
-            <h5 className="card-title">Bob</h5>
-            <p className="card-text"> 10 meses, Brasília DF,<br />
-             Bob é muito animado, tem muita energia pra gastar!  </p>
-            <Link className= "btn btn-info" to="/usuarios" > Quero Adotar </Link>
-          </div>
-        </div>
-
-        <div className="card">
-          <img className="card-img-top" src="img/Will.png" alt="Imagem de capa do card" />
-          <div className="card-body">
-            <h5 className="card-title">Will</h5>
-            <p className="card-text"> 2 anos, Brasília DF,<br />
-             will é o introverdido do grupo!  </p>
-            <Link className= "btn btn-info" to="/usuarios" > Quero Adotar </Link>
-          </div>
-        </div>
-
-        <div className="card">
-          <img className="card-img-top" src="img/chavosa.png" alt="Imagem de capa do card" />
-          <div className="card-body">
-            <h5 className="card-title">Chavosa</h5>
-            <p className="card-text"> 3 anos, Brasília DF,<br />
-             Chavosa é extremamente fofa e estilosa!  </p>
-            <Link className= "btn btn-info" to="/usuarios" > Quero Adotar </Link>
-          </div>
-        </div>
-
-        <div className="card">
-          <img className="card-img-top" src="img/Leo.png" alt="Imagem de capa do card" />
-          <div className="card-body">
-            <h5 className="card-title">Leo</h5>
-            <p className="card-text"> 6 meses, Brasília DF,<br />
-             Leo adora brincar com os outros gatos, super extrovertido!  </p>
-            <Link className= "btn btn-info" to="/usuarios" > Quero Adotar </Link>
-          </div>
-        </div>
-      </div>
-
-      <div className="container"> 
-        <div className="card">
-          <img className="card-img-top" src="img/Joao.png" alt="Imagem de capa do card" />
-          <div className="card-body">
-            <h5 className="card-title">João</h5>
-            <p className="card-text"> 10 meses, Brasília DF,<br />
-             João é muito animado, tem muita energia pra gastar!  </p>
-            <Link className= "btn btn-info" to="/usuarios" > Quero Adotar </Link>
-          </div>
-        </div>
-
-        <div className="card">
-          <img className="card-img-top" src="img/marias.png" alt="Imagem de capa do card" />
-          <div className="card-body">
-            <h5 className="card-title">3 Marias</h5>
-            <p className="card-text"> 1 anos, Brasília DF,<br />
-             As Marias são irmãs que cresceram juntas e não podem se separar!   </p>
-            <Link className= "btn btn-info" to="/usuarios" > Quero Adotar </Link>
-          </div>
-        </div>
-
-        <div className="card">
-          <img className="card-img-top" src="img/melo.png" alt="Imagem de capa do card" />
-          <div className="card-body">
-            <h5 className="card-title">Melo</h5>
-            <p className="card-text"> 3 anos, Brasília DF,<br />
-             Caramelo mais divertido de todos!  </p>
-            <Link className= "btn btn-info" to="/usuarios" > Quero Adotar </Link>
-          </div>
-        </div>
-
-        <div className="card">
-          <img className="card-img-top" src="img/let.png" alt="Imagem de capa do card" />
-          <div className="card-body">
-            <h5 className="card-title">Let</h5>
-            <p className="card-text"> 6 meses, Brasília DF,<br />
-             Let adora brincar com os outros gatos, super extrovertido!  </p>
-            <Link className= "btn btn-info" to="/usuarios" > Quero Adotar </Link>
-          </div>
-        </div>
-      </div>
-    </>
+    </div>
   );
 }
 

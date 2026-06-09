@@ -1,4 +1,5 @@
 import React from "react"
+import { Link, useNavigate } from "react-router-dom";
 import '../style/global.css'
 
 function Home(){
@@ -113,7 +114,7 @@ function Home(){
                 <h5 className="card-title">Ache seu novo amiguinho</h5>
                 <p className="card-text flex-grow-1">Adotar um animalzinho é um gesto de carinho e responsabilidade. Antes de decidir, avalie se você tem condições de cuidar dele. Procure abrigos ou ONGs e visite os animais disponíveis. Escolha com atenção, considerando o temperamento e as necessidades do pet. Após a adoção, ofereça cuidados, carinho e um ambiente seguro.</p>
                 <div className="card-footer bg-transparent border-0 px-0">
-                  <small className="text-muted">Confira a lista de animais <a href="pag1.html">aqui</a>.</small>
+                  <small className="text-muted">Confira a lista de animais <Link to="/adocoes">aqui</Link>.</small>
                 </div>
               </div>
             </div>
@@ -126,7 +127,7 @@ function Home(){
                 <h5 className="card-title">Formulário de interesse</h5>
                 <p className="card-text flex-grow-1">Se você está pensando em adotar um pet, o primeiro passo é preencher o formulário de adoção. Esse formulário ajuda os abrigos a entender melhor seu perfil e garantir que você está pronto para assumir a responsabilidade de cuidar de um animal. Ao preenchê-lo, seja honesto sobre sua rotina, espaço disponível e expectativas, para que o abrigo possa orientar a melhor escolha de pet para você.</p>
                 <div className="card-footer bg-transparent border-0 px-0">
-                  <small className="text-muted">Confira o nosso formulário <a href="declaracao.html">aqui</a>.</small>
+                  <small className="text-muted">Confira o nosso formulário <Link to="/usuarios">aqui</Link>.</small>
                 </div>
               </div>
             </div>

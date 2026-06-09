@@ -12,8 +12,10 @@ import Usuarios from "./pages/Usuarios";
 import Relatorio from "./pages/Relatorio";
 import Voluntario from "./pages/Voluntario";
 import Como from "./pages/Como_Ajudar";
-import Adocoes from "./pages/Adocoes";
+import Catalogo from "./pages/Catalogo";
 import Concluido from "./pages/Concluido";
+
+import CRUD3 from "./pages/Adocoes";
 
 function App() {
   return (
@@ -24,13 +26,14 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/voluntario" element={<Voluntario />} />
           <Route path="/como" element={<Como />} />
 
           <Route element={<PrivateRoute />}>
+            <Route path="/voluntario" element={<Voluntario />} />
             <Route path="/pets" element={<Pets />} />
             <Route path="/usuarios" element={<Usuarios />} />
-            <Route path="/adocoes" element={<Adocoes />} />
+            <Route path="/catalogo" element={<Catalogo />} />
+            <Route path="/crud3" element={<CRUD3 />} />
             <Route path="/relatorio" element={<Relatorio />} />
             <Route path="/concluido" element={<Concluido />} />
           </Route>
