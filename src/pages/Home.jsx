@@ -4,38 +4,97 @@ import '../style/global.css'
 function Home(){
     return (
         <>
-      <div id="carouselExampleIndicators" className="carousel slide" data-ride="carousel" style={{ maxWidth: '100%', margin: '0 auto' }}>
-        <ol className="carousel-indicators">
-          <li data-target="#carouselExampleIndicators" data-slide-to="0" className="active"></li>
-          <li data-target="#carouselExampleIndicators" data-slide-to="1"></li>
-          <li data-target="#carouselExampleIndicators" data-slide-to="2"></li>
-          <li data-target="#carouselExampleIndicators" data-slide-to="3"></li>
-        </ol>
-        <div className="carousel-inner">
-          <div className="carousel-item active">
-            <img className="d-block w-100 carousel-img-custom" src="/img/1.png" alt="Primeiro Slide" />
-          </div>
-          <div className="carousel-item">
-            <img className="d-block w-100 carousel-img-custom" src="/img/2.png" alt="Segundo Slide" />
-          </div>
-          <div className="carousel-item">
-            <img className="d-block w-100 carousel-img-custom" src="/img/3.png" alt="Terceiro Slide" />
-          </div>
-          <div className="carousel-item">
-            <img className="d-block w-100 carousel-img-custom" src="/img/Banner promoção pet shop divertido amarelo.png" alt="Quarto Slide" />
-          </div>
-        </div>
-        <a className="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
-          <span className="carousel-control-prev-icon" aria-hidden="true"></span>
-          <span className="sr-only">Anterior</span>
-        </a>
-        <a className="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
-          <span className="carousel-control-next-icon" aria-hidden="true"></span>
-          <span className="sr-only">Próximo</span>
-        </a>
-      </div>
+      <div
+  id="carouselExampleIndicators"
+  className="carousel slide carousel-custom"
+  data-bs-ride="carousel"
+>
+  <div className="carousel-indicators">
+    <button
+      type="button"
+      data-bs-target="#carouselExampleIndicators"
+      data-bs-slide-to="0"
+      className="active"
+      aria-current="true"
+      aria-label="Slide 1"
+    ></button>
 
-      <br /><br /><br />
+    <button
+      type="button"
+      data-bs-target="#carouselExampleIndicators"
+      data-bs-slide-to="1"
+      aria-label="Slide 2"
+    ></button>
+
+    <button
+      type="button"
+      data-bs-target="#carouselExampleIndicators"
+      data-bs-slide-to="2"
+      aria-label="Slide 3"
+    ></button>
+
+    <button
+      type="button"
+      data-bs-target="#carouselExampleIndicators"
+      data-bs-slide-to="3"
+      aria-label="Slide 4"
+    ></button>
+  </div>
+
+  <div className="carousel-inner">
+    <div className="carousel-item active">
+      <img
+        src="/img/1.png"
+        className="d-block w-100 carousel-img-custom"
+        alt="Primeiro slide"
+      />
+    </div>
+
+    <div className="carousel-item">
+      <img
+        src="/img/2.png"
+        className="d-block w-100 carousel-img-custom"
+        alt="Segundo slide"
+      />
+    </div>
+
+    <div className="carousel-item">
+      <img
+        src="/img/3.png"
+        className="d-block w-100 carousel-img-custom"
+        alt="Terceiro slide"
+      />
+    </div>
+
+    <div className="carousel-item">
+      <img
+        src="/img/Banner promoção pet shop divertido amarelo.png"
+        className="d-block w-100 carousel-img-custom"
+        alt="Quarto slide"
+      />
+    </div>
+  </div>
+
+  <button
+    className="carousel-control-prev"
+    type="button"
+    data-bs-target="#carouselExampleIndicators"
+    data-bs-slide="prev"
+  >
+    <span className="carousel-control-prev-icon" aria-hidden="true"></span>
+    <span className="visually-hidden">Anterior</span>
+  </button>
+
+  <button
+    className="carousel-control-next"
+    type="button"
+    data-bs-target="#carouselExampleIndicators"
+    data-bs-slide="next"
+  >
+    <span className="carousel-control-next-icon" aria-hidden="true"></span>
+    <span className="visually-hidden">Próximo</span>
+  </button>
+</div>
 
       <div className="t1">
         <h3 style={{ color: 'orange' }}>Conheça o Cafofo peludo</h3>
