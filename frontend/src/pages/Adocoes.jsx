@@ -11,69 +11,73 @@ function Adocoes() {
   const [availablePets, setAvailablePets] = useState([]);
   const [availableUsuarios, setAvailableUsuarios] = useState([]);
 
+  // URL base do seu backend Node.js
+  const API_URL = "http://localhost:3000/api";
+
+  // 🔌 CARREGAR DADOS DO BANCO LOGO AO ENTRAR NA TELA
   useEffect(() => {
-    const adocoesSalvas = localStorage.getItem("@CafofoPeludos:adocoes");
-    if (adocoesSalvas) setAdocoes(JSON.parse(adocoesSalvas));
-
-    const petsSalvos = localStorage.getItem("@CafofoPeludos:pets");
-    if (petsSalvos) {
-      setAvailablePets(JSON.parse(petsSalvos));
-    } else {
-      const mockPets = [
-        { id: "p1", nome: "Alex", especie: "Gato/Cachorro", idade: "6 meses" },
-        { id: "p2", nome: "Sicha", especie: "Gato/Cachorro", idade: "3 meses" },
-        { id: "p3", nome: "Mel", especie: "Gato/Cachorro", idade: "8 meses" },
-        { id: "p4", nome: "Rosa", especie: "Gato/Cachorro", idade: "1 ano" },
-        { id: "p5", nome: "Bob", especie: "Gato/Cachorro", idade: "10 meses" },
-        { id: "p6", nome: "Will", especie: "Gato/Cachorro", idade: "2 anos" },
-        { id: "p7", nome: "Chavosa", especie: "Gato/Cachorro", idade: "3 anos" },
-        { id: "p8", nome: "Leo", especie: "Gato/Cachorro", idade: "6 meses" },
-        { id: "p9", nome: "João", especie: "Gato/Cachorro", idade: "10 meses" },
-        { id: "p10", nome: "3 Marias", especie: "Gato/Cachorro", idade: "1 ano" },
-        { id: "p11", nome: "Melo", especie: "Gato/Cachorro", idade: "3 anos" },
-        { id: "p12", nome: "Let", especie: "Gato/Cachorro", idade: "6 meses" }
-      ];
-      setAvailablePets(mockPets);
-    }
-
-    const usuariosSalvos = localStorage.getItem("@CafofoPeludos:usuarios");
-    if (usuariosSalvos) {
-      setAvailableUsuarios(JSON.parse(usuariosSalvos));
-    } else {
-      const mockUsuarios = [
-        { id: "u1", nome: "Maria (Teste)" },
-        { id: "u2", nome: "João (Teste)" }
-      ];
-      setAvailableUsuarios(mockUsuarios);
-    }
+    carregarDados();
   }, []);
 
-  const getPetName = (id) => availablePets.find(p => p.id === id)?.nome || "Pet não encontrado";
-  const getUsuarioName = (id) => availableUsuarios.find(u => u.id === id)?.nome || "Adotante não encontrado";
+  const carregarDados = async () => {
+    try {
+      // 1. Tenta buscar os pets reais do banco de dados MySQL
+      const resPets = await fetch(`${API_URL}/pets`);
+      if (resPets.ok) {
+        const dataPets = await resPets.json();
+        setAvailablePets(dataPets);
+      }
 
-  const petsDisponiveisParaAdocao = availablePets.filter((pet) => {
-    const jaAdotado = adocoes.some((adocao) => adocao.petId === pet.id);
-    if (idEdicao) {
-      const petEmEdicao = adocoes.find(a => a.id === idEdicao)?.petId;
-      if (pet.id === petEmEdicao) return true;
+      // 2. Tenta buscar as adoções reais do banco (Se falhar, mantém vazio)
+      const resAdocoes = await fetch(`${API_URL}/relatorio-join`);
+      if (resAdocoes.ok) {
+        const dataAdocoes = await resAdocoes.json();
+        setAdocoes(dataAdocoes);
+      }
+
+      try {
+        const resUsuarios = await fetch(`${API_URL}/usuarios`);
+        if (resUsuarios.ok) {
+          const dataUsuarios = await resUsuarios.json();
+          setAvailableUsuarios(dataUsuarios);
+        } else {
+          setAvailableUsuarios([
+            { id: 1, nome: "Maria (Teste)" },
+            { id: 2, nome: "João (Teste)" }
+          ]);
+        }
+      } catch {
+        // funcionar mesmo sem o CRUD 2 pronto
+        setAvailableUsuarios([
+          { id: 1, nome: "Maria (Teste)" },
+          { id: 2, nome: "João (Teste)" }
+        ]);
+      }
+
+    } catch (err) {
+      console.error("Erro ao conectar com o backend:", err);
+      setError("Nota: Rodando com contingência. Verifique se o backend Node está ativo.");
     }
+  };
+
+  // FILTRAR PETS ADOTADOS
+  const petsDisponiveisParaAdocao = availablePets.filter((pet) => {
+    // Procura se o id deste pet já está registrado em alguma adoção na tabela
+    const jaAdotado = adocoes.some((adocao) => Number(adocao.petId) === Number(pet.id));
+    
+    // Se você estiver editando uma adoção, o pet dela precisa reaparecer na lista para você poder mexer
+    if (idEdicao) {
+      const adocaoAtual = adocoes.find(a => Number(a.id) === Number(idEdicao));
+      if (adocaoAtual && Number(pet.id) === Number(adocaoAtual.petId)) {
+        return true; 
+      }
+    }
+
     return !jaAdotado;
   });
 
-  const salvarLocalStorage = (listaAtualizada) => {
-    setAdocoes(listaAtualizada);
-    localStorage.setItem("@CafofoPeludos:adocoes", JSON.stringify(listaAtualizada));
-  };
-
-  const limparFormulario = () => {
-    setPetId("");
-    setUsuarioId("");
-    setDataAdocao("");
-    setIdEdicao(null);
-    setError("");
-  };
-
-  const handleSubmit = (e) => {
+  // POST / PUT
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
 
@@ -82,35 +86,59 @@ function Adocoes() {
       return;
     }
 
-    if (idEdicao) {
-      const listaEditada = adocoes.map((item) =>
-        item.id === idEdicao ? { ...item, petId, usuarioId, dataAdocao } : item
-      );
-      salvarLocalStorage(listaEditada);
-    } else {
-      const novaAdocao = {
-        id: Date.now().toString(),
-        petId,
-        usuarioId,
-        dataAdocao
-      };
-      salvarLocalStorage([...adocoes, novaAdocao]);
-    }
+    const payload = {
+      petId: Number(petId),
+      usuarioId: Number(usuarioId),
+      dataAdocao
+    };
 
-    limparFormulario();
+    try {
+      if (idEdicao) {
+        const response = await fetch(`${API_URL}/adocoes/${idEdicao}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+        if (!response.ok) throw new Error();
+        setIdEdicao(null);
+      } else {
+        const response = await fetch(`${API_URL}/adocoes`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+        if (!response.ok) throw new Error();
+      }
+
+      setPetId("");
+      setUsuarioId("");
+      setDataAdocao("");
+      carregarDados();
+
+    } catch (err) {
+      setError("Erro ao processar a requisição no banco de dados.");
+    }
   };
 
   const handleEdit = (item) => {
     setIdEdicao(item.id);
-    setPetId(item.petId);
-    setUsuarioId(item.usuarioId);
-    setDataAdocao(item.dataAdocao);
+    setPetId(item.petId || "");
+    setUsuarioId(item.usuarioId || "");
+    if (item.data) {
+      setDataAdocao(item.data.split("T")[0]);
+    }
   };
 
-  const handleDelete = (id) => {
+  const handleDelete = async (id) => {
     if (window.confirm("Deseja realmente cancelar este registro de adoção?")) {
-      const listaFiltrada = adocoes.filter((item) => item.id !== id);
-      salvarLocalStorage(listaFiltrada);
+      try {
+        const response = await fetch(`${API_URL}/adocoes/${id}`, {
+          method: "DELETE"
+        });
+        if (response.ok) carregarDados();
+      } catch (err) {
+        setError("Erro ao deletar o registro do banco.");
+      }
     }
   };
 
@@ -118,7 +146,6 @@ function Adocoes() {
     <div className="container-fluid w-100 px-4 mt-5" style={{ minHeight: "80vh" }}>
       <div className="row d-flex flex-row justify-content-between align-items-start m-0 w-100">
         
-        {/* COLUNA DO FORMULÁRIO */}
         <div className="col-12 col-md-4 mb-4" style={{ minWidth: "300px" }}>
           <div className="card p-4 shadow-sm" style={{ width: "100%", display: "block" }}>
             <h4 className="card-title text-center mb-4" style={{ whiteSpace: "nowrap" }}>
@@ -136,23 +163,26 @@ function Adocoes() {
                   onChange={(e) => setPetId(e.target.value)}
                 >
                   <option value="">Escolha um pet...</option>
-                  {/* Usa a lista filtrada aqui */}
                   {petsDisponiveisParaAdocao.map(pet => (
-                    <option key={pet.id} value={pet.id}>{pet.nome}</option>
+                    <option key={pet.id} value={pet.id}>
+                      {pet.nome}
+                    </option>
                   ))}
                 </select>
               </div>
 
               <div className="mb-3 text-start">
-                <label className="form-label d-block text-muted fw-bold">Selecione o Adotante</label>
+                <label className="form-label d-block text-muted fw-bold"> Selecionar Adotante:</label>
                 <select
-                  className="form-select w-100"
+                  className="form-select"
                   value={usuarioId}
                   onChange={(e) => setUsuarioId(e.target.value)}
                 >
                   <option value="">Escolha um adotante...</option>
-                  {availableUsuarios.map(user => (
-                    <option key={user.id} value={user.id}>{user.nome}</option>
+                  {availableUsuarios.map((user) => (
+                    <option key={user.id} value={user.id}>
+                      {user.nome}
+                    </option>
                   ))}
                 </select>
               </div>
@@ -172,7 +202,7 @@ function Adocoes() {
               </button>
 
               {idEdicao && (
-                <button type="button" className="btn btn-light w-100" onClick={limparFormulario}>
+                <button type="button" className="btn btn-light w-100" onClick={() => { setIdEdicao(null); setPetId(""); setUsuarioId(""); setDataAdocao(""); }}>
                   Cancelar
                 </button>
               )}
@@ -180,7 +210,6 @@ function Adocoes() {
           </div>
         </div>
 
-        {/* COLUNA DA LISTAGEM DAS ADOÇÕES */}
         <div className="col-12 col-md-8 mb-4 flex-grow-1 ps-md-4">
           <div className="card p-4 shadow-sm w-100" style={{ display: "block" }}>
             <h4 className="mb-4 text-start">📋 Histórico de Adoções Diretas</h4>
@@ -204,9 +233,13 @@ function Adocoes() {
                   <tbody>
                     {adocoes.map((item) => (
                       <tr key={item.id}>
-                        <td className="fw-bold text-start">{getUsuarioName(item.usuarioId)}</td>
-                        <td className="text-start"><span className="badge bg-info">{getPetName(item.petId)}</span></td>
-                        <td className="text-start">{item.dataAdocao.split('-').reverse().join('/')}</td>
+                        <td className="fw-bold text-start">{item.nomeAdotante}</td>
+                        <td className="text-start">
+                          <span className="badge bg-info">{item.nomePet}</span>
+                        </td>
+                        <td className="text-start">
+                          {item.data ? new Date(item.data).toLocaleDateString('pt-BR', {timeZone: 'UTC'}) : "---"}
+                        </td>
                         <td className="text-end">
                           <button
                             className="btn btn-sm btn-outline-primary me-2"
