@@ -13,7 +13,8 @@ function Login() {
 
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  // função assíncrona para esperar a resposta do Firebase
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
 
@@ -22,15 +23,32 @@ function Login() {
       return;
     }
 
-    login(email, password);
-    navigate('/catalogo');
+    try {
+      await login(email, password);
+      
+      navigate('/catalogo');
+    } catch (err) {
+      console.error(err);
+      
+      if (
+        err.code === 'auth/invalid-credential' || 
+        err.code === 'auth/wrong-password' || 
+        err.code === 'auth/user-not-found'
+      ) {
+        setError('E-mail ou senha incorretos.');
+      } else if (err.code === 'auth/invalid-email') {
+        setError('O formato do e-mail digitado é inválido.');
+      } else {
+        setError('Falha ao conectar com o serviço de autenticação. Verifica a tua rede.');
+      }
+    }
   };
 
   return (
     <div className="login-container">
       <h2>Acesso ao Cafofo dos Peludos</h2>
       <form onSubmit={handleSubmit}>
-        {error && <p style={{ color: 'red' }}>{error}</p>}
+        {error && <p style={{ color: 'red', fontWeight: 'bold' }}>{error}</p>}
         
         <div className="form-group">
           <label>E-mail:</label>
@@ -38,19 +56,21 @@ function Login() {
             type="email" 
             value={email} 
             onChange={(e) => setEmail(e.target.value)} 
+            placeholder="exemplo@teste.com"
           />
         </div>
 
         <div className="form-group">
           <label>Senha:</label>
           <input 
-            type="password" 
-            value={password} 
-            onChange={(e) => setPassword(e.target.value)} 
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="Introduz a tua senha"
           />
         </div>
 
-        <button type="submit">Entrar</button>
+        <button type="submit" className="btn-login">Entrar</button>
       </form>
     </div>
   );
