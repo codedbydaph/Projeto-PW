@@ -1,7 +1,84 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import '../style/global.css';
 
 function Pets() {
+  const [formData, setFormData] = useState({
+    id: null,
+    nome: "",
+    tipo: "Cachorro",
+    idade: "",
+    descricao: ""
+  });
+
+  const [pets, setPets] = useState([]);
+  
+  useEffect(() => {
+    const dadosSalvos = localStorage.getItem("pets");
+
+    if (dadosSalvos) {
+      setPets(JSON.parse(dadosSalvos));
+    }
+  }, []);
+
+  const handleInputChange = (e) => {
+    const { id, value } = e.target;
+
+    const fieldMap = {
+      inputNome: "nome",
+      inputTipo: "tipo",
+      inputIdade: "idade",
+      inputDescricao: "descricao"
+    };
+
+    setFormData({
+      ...formData,
+      [fieldMap[id]]: value
+    });
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    if (
+      formData.nome.trim() === "" ||
+      formData.idade.trim() === "" ||
+      formData.descricao.trim() === ""
+    ) {
+      alert("Preencha todos os campos obrigatórios.");
+      return;
+    }
+
+    let listaAtualizada;
+
+    if (formData.id) {
+      // updatar pet ja adicionado
+      listaAtualizada = pets.map((pet) =>
+        pet.id === formData.id ? formData : pet
+      );
+
+      alert("Pet atualizado com sucesso!");
+    } else {
+      // "criar" nosso petzinho
+      const novoPet = {
+        ...formData,
+        id: Date.now()
+      };
+
+      listaAtualizada = [...pets, novoPet];
+
+      alert("Pet cadastrado com sucesso!");
+    }
+
+    setPets(listaAtualizada);
+
+    localStorage.setItem(
+      "pets",
+      JSON.stringify(listaAtualizada)
+    );
+
+    limparFormulario();
+  };
+
   return (
     <>
       <header>
