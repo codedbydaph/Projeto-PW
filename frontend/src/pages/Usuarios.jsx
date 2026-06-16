@@ -20,12 +20,12 @@ function Usuarios() {
   // Estado para armazenar a lista de adotantes salvos
   const [adotantes, setAdotantes] = useState([]);
 
-  // Carrega os dados salvos no localStorage ao iniciar a página
+  // CONEXÃO COM O BACKEND: Carrega os dados reais do Banco de Dados ao iniciar a página
   useEffect(() => {
-    const dadosSalvos = localStorage.getItem("adotantes");
-    if (dadosSalvos) {
-      setAdotantes(JSON.parse(dadosSalvos));
-    }
+    fetch("http://localhost:3000/api/usuarios")
+      .then((res) => res.json())
+      .then((data) => setAdotantes(data))
+      .catch((err) => console.error("Erro ao buscar adotantes:", err));
   }, []);
 
   // Função para capturar as mudanças nos inputs
@@ -48,8 +48,8 @@ function Usuarios() {
     });
   };
 
-  // Função para Criar ou Atualizar (CREATE & UPDATE)
-  const handleSubmit = (e) => {
+  // Função para Criar ou Atualizar conectando ao Backend (POST & PUT)
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (formData.estado === "Escolher...") {
@@ -57,25 +57,42 @@ function Usuarios() {
       return;
     }
 
-    let listaAtualizada;
+    try {
+      if (formData.id) {
+        // UPDATE (PUT) - Atualiza no banco de dados
+        const response = await fetch(`http://localhost:3000/api/usuarios/${formData.id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(formData),
+        });
 
-    if (formData.id) {
-      // UPDATE
-      listaAtualizada = adotantes.map((adotante) =>
-        adotante.id === formData.id ? formData : adotante
-      );
-      alert("Cadastro atualizado com sucesso!");
-    } else {
-      // CREATE
-      const novoAdotante = { ...formData, id: Date.now() };
-      listaAtualizada = [...adotantes, novoAdotante];
-      alert("Cadastro realizado com sucesso!");
+        if (response.ok) {
+          setAdotantes(adotantes.map((adotante) =>
+            adotante.id === formData.id ? formData : adotante
+          ));
+          alert("Cadastro atualizado com sucesso!");
+        }
+      } else {
+        // CREATE (POST) - Envia para o banco de dados
+        const response = await fetch("http://localhost:3000/api/usuarios", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(formData),
+        });
+
+        if (response.ok) {
+          const novoAdotanteCriado = await response.json();
+          setAdotantes([...adotantes, novoAdotanteCriado]);
+          alert("Cadastro realizado com sucesso!");
+        }
+      }
+
+      limparFormulario();
+      navigate("/concluido");
+    } catch (error) {
+      console.error("Erro ao salvar dados:", error);
+      alert("Erro ao conectar com o servidor.");
     }
-
-    setAdotantes(listaAtualizada);
-    localStorage.setItem("adotantes", JSON.stringify(listaAtualizada));
-    limparFormulario();
-    navigate("/concluido");
   };
 
   // Função para carregar os dados no formulário para Edição
@@ -84,15 +101,25 @@ function Usuarios() {
     window.scrollTo({ top: 0, behavior: 'smooth' }); // Sobe a página suavemente para o formulário
   };
 
-  // Função para deletar um adotante (DELETE)
-  const handleDelete = (id) => {
+  // Função para deletar um adotante no Backend (DELETE)
+  const handleDelete = async (id) => {
     if (window.confirm("Tem certeza que deseja excluir este adotante?")) {
-      const listaFiltrada = adotantes.filter((adotante) => adotante.id !== id);
-      setAdotantes(listaFiltrada);
-      localStorage.setItem("adotantes", JSON.stringify(listaFiltrada));
-      
-      if (formData.id === id) {
-        limparFormulario();
+      try {
+        const response = await fetch(`http://localhost:3000/api/usuarios/${id}`, {
+          method: "DELETE",
+        });
+
+        if (response.ok) {
+          setAdotantes(adotantes.filter((adotante) => adotante.id !== id));
+          alert("Adotante removido com sucesso.");
+          
+          if (formData.id === id) {
+            limparFormulario();
+          }
+        }
+      } catch (error) {
+        console.error("Erro ao deletar:", error);
+        alert("Erro ao excluir o registro.");
       }
     }
   };
@@ -127,7 +154,7 @@ function Usuarios() {
             id="inputNome" 
             placeholder="Digite seu nome" 
             required 
-            value={formData.nome}
+            value={formData.nome || ""}
             onChange={handleInputChange}
           />
 
@@ -137,7 +164,7 @@ function Usuarios() {
             id="inputSobrenome" 
             placeholder="Digite seu sobrenome" 
             required 
-            value={formData.sobrenome}
+            value={formData.sobrenome || ""}
             onChange={handleInputChange}
           />
 
@@ -147,7 +174,7 @@ function Usuarios() {
             id="inputAddress" 
             placeholder="Rua dos Bobos, nº 0" 
             required 
-            value={formData.endereco}
+            value={formData.endereco || ""}
             onChange={handleInputChange}
           />
 
@@ -156,7 +183,7 @@ function Usuarios() {
             type="text" 
             id="inputAddress2" 
             placeholder="Apartamento, hotel, casa, etc." 
-            value={formData.endereco2}
+            value={formData.endereco2 || ""}
             onChange={handleInputChange}
           />
 
@@ -166,7 +193,7 @@ function Usuarios() {
             id="inputCity" 
             placeholder="Sua cidade" 
             required 
-            value={formData.cidade}
+            value={formData.cidade || ""}
             onChange={handleInputChange}
           />
 
@@ -174,7 +201,7 @@ function Usuarios() {
           <select 
             id="inputEstado" 
             required 
-            value={formData.estado}
+            value={formData.estado || "Escolher..."}
             onChange={handleInputChange}
           >
             <option value="Escolher..." disabled>Escolher...</option>
@@ -190,7 +217,7 @@ function Usuarios() {
             id="inputCEP" 
             placeholder="00000-000" 
             required 
-            value={formData.cep}
+            value={formData.cep || ""}
             onChange={handleInputChange}
           />
 
@@ -208,7 +235,7 @@ function Usuarios() {
         </form>
       </section>
 
-      {/* Nova seção para LISTAR os Adotantes cadastrados (READ) */}
+      {/* Seção para LISTAR os Adotantes cadastrados (READ) */}
       <section className="form-container list-container">
         <h2>Adotantes Cadastrados</h2>
         {adotantes.length === 0 ? (
