@@ -1,33 +1,45 @@
 import React, { useState, useEffect } from "react";
-import '../style/global.css';
+import "../style/global.css";
 
 function Pets() {
-  const [formData, setFormData] = useState({
-    id: null,
-    nome: "",
-    tipo: "Cachorro",
-    idade: "",
-    descricao: ""
-  });
+  const API_URL = "http://localhost:3000/api/pets";
 
   const [pets, setPets] = useState([]);
-  
-  useEffect(() => {
-    const dadosSalvos = localStorage.getItem("pets");
 
-    if (dadosSalvos) {
-      setPets(JSON.parse(dadosSalvos));
-    }
+  const [formData, setFormData] = useState({
+      id: null,
+      imagem: "",
+      nome: "",
+      especie: "Cachorro",
+      idade: "",
+      descricao: "",
+      status: "Disponível"
+  });
+
+  useEffect(() => {
+    carregarPets();
   }, []);
+
+  async function carregarPets() {
+    try {
+      const response = await fetch(API_URL);
+      const data = await response.json();
+      setPets(data);
+    } catch (error) {
+      console.error("Erro ao carregar pets:", error);
+    }
+  }
 
   const handleInputChange = (e) => {
     const { id, value } = e.target;
 
     const fieldMap = {
+      inputImagem: "imagem",
       inputNome: "nome",
-      inputTipo: "tipo",
+      inputEspecie: "especie",
+      inputDescricao: "descricao",
       inputIdade: "idade",
-      inputDescricao: "descricao"
+      inputStatus: "status"
     };
 
     setFormData({
@@ -36,86 +48,272 @@ function Pets() {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (
-      formData.nome.trim() === "" ||
-      formData.idade.trim() === "" ||
-      formData.descricao.trim() === ""
-    ) {
-      alert("Preencha todos os campos obrigatórios.");
+    try {
+      if (formData.id) {
+        await fetch(`${API_URL}/${formData.id}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(formData)
+        });
+
+        alert("Pet atualizado com sucesso!");
+      } else {
+        await fetch(API_URL, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(formData)
+        });
+
+        alert("Pet cadastrado com sucesso!");
+      }
+
+      limparFormulario();
+      carregarPets();
+
+    } catch (error) {
+      console.error(error);
+      alert("Erro ao salvar pet.");
+    }
+  };
+
+  const handleEdit = (pet) => {
+    setFormData(pet);
+
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth"
+    });
+  };
+
+  const handleDelete = async (id) => {
+    if (!window.confirm("Deseja excluir este pet?")) {
       return;
     }
 
-    let listaAtualizada;
+    try {
+      await fetch(`${API_URL}/${id}`, {
+        method: "DELETE"
+      });
 
-    if (formData.id) {
-      // updatar pet ja adicionado
-      listaAtualizada = pets.map((pet) =>
-        pet.id === formData.id ? formData : pet
-      );
+      carregarPets();
 
-      alert("Pet atualizado com sucesso!");
-    } else {
-      // "criar" nosso petzinho
-      const novoPet = {
-        ...formData,
-        id: Date.now()
-      };
-
-      listaAtualizada = [...pets, novoPet];
-
-      alert("Pet cadastrado com sucesso!");
+    } catch (error) {
+      console.error(error);
+      alert("Erro ao excluir pet.");
     }
+  };
 
-    setPets(listaAtualizada);
-
-    localStorage.setItem(
-      "pets",
-      JSON.stringify(listaAtualizada)
-    );
-
-    limparFormulario();
+  const limparFormulario = () => {
+    setFormData({
+      id: null,
+      imagem: "",
+      nome: "",
+      especie: "Cachorro",
+      idade: "",
+      descricao: "",
+      status: "Disponível"
+    });
   };
 
   return (
     <>
       <header>
-        <h1>Adicione um Pet para Adoção</h1>
+        <h1>Cadastro de Pets</h1>
       </header>
 
       <section className="form-container">
-        <h2>Preencha os detalhes abaixo para adicionar um pet à nossa lista de adoção.</h2>
+        <h2>
+          {formData.id
+            ? "Editar Pet"
+            : "Adicionar Pet para Adoção"}
+        </h2>
 
-        <form action="/submit-pet" method="POST" className="pet-form">
-          <label htmlFor="nome">Nome do Pet:</label>
-          <input type="text" id="nome" name="nome" placeholder="Nome do pet" required />
+        <form className="pet-form" onSubmit={handleSubmit}>
+        
+          <label htmlFor="inputImagem">
+            URL da Imagem:
+          </label>
 
-          <label htmlFor="tipo">Tipo de Animal:</label>
-          <select id="tipo" name="tipo" required>
+          <input
+            type="text"
+            id="inputImagem"
+            value={formData.imagem}
+            onChange={handleInputChange}
+            placeholder="https://site.com/imagem.jpg"
+/>
+          <label htmlFor="inputNome">
+            Nome do Pet:
+          </label>
+
+          <input
+            type="text"
+            id="inputNome"
+            required
+            value={formData.nome}
+            onChange={handleInputChange}
+            placeholder="Nome do pet"
+          />
+
+          <label htmlFor="inputEspecie">
+            Espécie:
+          </label>
+
+          <select
+            id="inputEspecie"
+            value={formData.especie}
+            onChange={handleInputChange}
+          >
             <option value="Cachorro">Cachorro</option>
             <option value="Gato">Gato</option>
-            <option value="Outro">Outro</option>
           </select>
 
-          <label htmlFor="idade">Idade do Pet:</label>
-          <input type="text" id="idade" name="idade" placeholder="Idade do pet" required />
+          <label htmlFor="inputIdade">
+            Idade:
+          </label>
 
-          <label htmlFor="descricao">Descrição:</label>
-          <textarea id="descricao" name="descricao" placeholder="Descreva as características do pet" rows="4" required></textarea>
+          <input
+            type="text"
+            id="inputIdade"
+            required
+            value={formData.idade}
+            onChange={handleInputChange}
+            placeholder="Ex: 2 anos"
+          />
 
-          <div className="form-group">
-            <label htmlFor="exampleFormControlFile1">Adicionar foto de pet</label>
-            <input type="file" className="form-control-file" id="exampleFormControlFile1" />
+          <label htmlFor="inputDescricao">
+            Descrição:
+          </label>
+
+          <input 
+          type="text"
+          id="inputDescricao"
+          required
+          value={formData.descricao}
+          onChange={handleInputChange}
+          placeholder="Filhote em busca de um Lar" 
+          />
+
+          <label htmlFor="inputStatus">
+            Status:
+          </label>
+
+          <select
+            id="inputStatus"
+            value={formData.status}
+            onChange={handleInputChange}
+          >
+            <option value="Disponível">
+              Disponível
+            </option>
+
+            <option value="Adotado">
+              Adotado
+            </option>
+          </select>
+
+          <div className="form-buttons-group">
+
+            <button
+              type="submit"
+              className="btn-submit"
+            >
+              {formData.id
+                ? "Salvar Alterações"
+                : "Adicionar Pet"}
+            </button>
+
+            {formData.id && (
+              <button
+                type="button"
+                className="btn-cancel"
+                onClick={limparFormulario}
+              >
+                Cancelar
+              </button>
+            )}
+
           </div>
 
-          <button type="submit">Adicionar Pet</button>
         </form>
       </section>
 
+      <section className="form-container list-container">
+        <h2>Pets Cadastrados</h2>
+
+        {pets.length === 0 ? (
+          <p className="no-data">
+            Nenhum pet cadastrado.
+          </p>
+        ) : (
+          <div className="cards-grid">
+
+            {pets.map((pet) => (
+              <div
+                key={pet.id}
+                className="adotante-card"
+              >
+                <p>
+                  <strong>Nome:</strong> {pet.nome}
+                </p>
+
+                <p>
+                  <strong>Espécie:</strong> {pet.especie}
+                </p>
+
+                <p>
+                  <strong>Idade:</strong> {pet.idade}
+                </p>
+
+                <p>
+                  <strong>Descrição:</strong> {pet.descricao}
+                </p>
+
+                <p>
+                  <strong>Status:</strong> {pet.status}
+                </p>
+
+                <div className="card-actions">
+
+                  <button
+                    type="button"
+                    className="btn-edit"
+                    onClick={() => handleEdit(pet)}
+                  >
+                    Editar
+                  </button>
+
+                  <button
+                    type="button"
+                    className="btn-delete"
+                    onClick={() => handleDelete(pet.id)}
+                  >
+                    Excluir
+                  </button>
+
+                </div>
+
+              </div>
+            ))}
+
+          </div>
+        )}
+      </section>
+
       <footer>
-        <p>Entre em contato: <a href="mailto:CafofoDosPeludos@gmail.com">CafofoDosPeludos@gmail.com</a></p>
+        <p>
+          Entre em contato:
+          {" "}
+          <a href="mailto:CafofoDosPeludos@gmail.com">
+            CafofoDosPeludos@gmail.com
+          </a>
+        </p>
       </footer>
     </>
   );

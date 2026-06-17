@@ -12,14 +12,13 @@ app.use(express.json());
 const db = await mysql.createConnection({
   host: 'localhost',
   user: 'root',  
-  password: 'senhaSQL123', 
+  password: 'SenhaNF', 
   database: 'cafofo_db'
 });
 
 console.log('Conectado com sucesso!');
 
 // CRUD 1 (pra aparecer na tabela do crud 3)
-
 app.get('/api/pets', async (req, res) => {
   try {
     const [rows] = await db.query('SELECT * FROM pets');
@@ -30,6 +29,64 @@ app.get('/api/pets', async (req, res) => {
   }
 });
 
+app.post('/api/pets', async (req, res) => {
+  const { imagem, nome, especie, idade, descricao, status } = req.body;
+  try {
+    const [result] = await db.query(
+      'INSERT INTO pets (imagem, nome, especie, idade, descricao, status) VALUES (?, ?, ?, ?, ?, ?)',
+      [imagem, nome, especie, idade, descricao, status]
+    );
+    res.status(201).json({
+      id: result.insertId,
+      imagem,
+      nome,
+      especie,
+      idade,
+      descricao,
+      status
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Erro ao cadastrar pet.' });
+  }
+});
+
+app.put('/api/pets/:id', async (req, res) => {
+  const { id } = req.params;
+  const {imagem, nome, especie, idade, descricao, status} = req.body;
+  try {
+    await db.query(
+      'UPDATE pets SET imagem = ?, nome = ?, especie = ?, idade = ?, descricao = ? ,status = ? WHERE id = ?',
+      [imagem, nome, especie, idade, descricao, status]
+    );
+    res.json({
+      message: 'Pet atualizado com sucesso!'
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      error: 'Erro ao atualizar pet.'
+    });
+  }
+});
+
+app.delete('/api/pets/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    await db.query(
+      'DELETE FROM pets WHERE id = ?',
+      [id]
+    );
+    res.json({
+      message: 'Pet removido com sucesso!'
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      error: 'Erro ao remover pet.'
+    });
+  }
+});
 
 // CRUD 2: USUÁRIOS (preenchido pro 3 poder ser feito)
 
