@@ -11,15 +11,12 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json()); 
 
-// CONFIGURAÇÃO DO MULTER DIRECIONADA PARA O FRONTEND
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    // IMPORTANTE: Ajuste a quantidade de "../" dependendo de onde o seu server.js está.
-    // Exemplo: se o back e o front estão na mesma pasta raiz, você sai do back e entra no front:
     cb(null, '../frontend/public/uploads/'); 
   },
   filename: function (req, file, cb) {
-    // Define um nome único para o arquivo
+
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
     cb(null, uniqueSuffix + path.extname(file.originalname));
   }
@@ -35,8 +32,7 @@ const db = await mysql.createConnection({
 
 console.log('Conectado com sucesso!');
 
-// --- ROTAS CRUD ---
-// -- Crud 1 --
+// CRUD 1
 app.get('/api/pets', async (req, res) => {
   try {
     const [rows] = await db.query('SELECT * FROM pets');
@@ -102,7 +98,7 @@ app.delete('/api/pets/:id', async (req, res) => {
   }
 });
 
-// CRUD 2: USUÁRIOS 
+// CRUD 2
 
 // 1. Rota de Leitura (Listar os usuários no CRUD 3)
 app.get('/api/usuarios', async (req, res) => {

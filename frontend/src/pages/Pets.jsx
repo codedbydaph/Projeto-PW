@@ -60,7 +60,6 @@ function Pets() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // NOVO: Validação com .trim() para impedir envio de apenas espaços
     if (
       !formData.nome.trim() || 
       !formData.idade.trim() || 
@@ -76,7 +75,6 @@ function Pets() {
       data.append("imagem", formData.imagem);
     }
     
-    // Na hora de enviar, também mandamos a versão "limpa" com .trim() para o banco de dados
     data.append("nome", formData.nome.trim());
     data.append("especie", formData.especie);
     data.append("idade", formData.idade.trim());
