@@ -49,13 +49,24 @@ function Usuarios() {
   };
 
   // Função para Criar ou Atualizar conectando ao Backend (POST & PUT)
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+ const handleSubmit = async (e) => {
+  e.preventDefault();
 
-    if (formData.estado === "Escolher...") {
-      alert("Por favor, selecione um estado válido.");
-      return;
-    }
+  if (
+    !formData.nome.trim() ||
+    !formData.sobrenome.trim() ||
+    !formData.endereco.trim() ||
+    !formData.cidade.trim() ||
+    !formData.cep.trim()
+  ) {
+    alert("Por favor, preencha os campos corretamente.");
+    return;
+  }
+
+  if (formData.estado === "Escolher...") {
+    alert("Por favor, selecione um estado válido.");
+    return;
+  }
 
     try {
       if (formData.id) {
@@ -88,7 +99,7 @@ function Usuarios() {
       }
 
       limparFormulario();
-      navigate("/concluido");
+      //navigate("/concluido");
     } catch (error) {
       console.error("Erro ao salvar dados:", error);
       alert("Erro ao conectar com o servidor.");

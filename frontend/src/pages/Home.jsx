@@ -114,7 +114,7 @@ function Home(){
                 <h5 className="card-title">Ache seu novo amiguinho</h5>
                 <p className="card-text flex-grow-1">Adotar um animalzinho é um gesto de carinho e responsabilidade. Antes de decidir, avalie se você tem condições de cuidar dele. Procure abrigos ou ONGs e visite os animais disponíveis. Escolha com atenção, considerando o temperamento e as necessidades do pet. Após a adoção, ofereça cuidados, carinho e um ambiente seguro.</p>
                 <div className="card-footer bg-transparent border-0 px-0">
-                  <small className="text-muted">Confira a lista de animais <Link to="/adocoes">aqui</Link>.</small>
+                  <small className="text-muted">Confira a lista de animais <Link to="/catalogo">aqui</Link>.</small>
                 </div>
               </div>
             </div>

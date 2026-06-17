@@ -21,42 +21,30 @@ function Adocoes() {
 
   const carregarDados = async () => {
     try {
-      // 1. Tenta buscar os pets reais do banco de dados MySQL
+      // 1. Busca os pets do MySQL
       const resPets = await fetch(`${API_URL}/pets`);
       if (resPets.ok) {
         const dataPets = await resPets.json();
         setAvailablePets(dataPets);
       }
 
-      // 2. Tenta buscar as adoções reais do banco (Se falhar, mantém vazio)
+      // 2. Busca as adoções com o JOIN real
       const resAdocoes = await fetch(`${API_URL}/relatorio-join`);
       if (resAdocoes.ok) {
         const dataAdocoes = await resAdocoes.json();
         setAdocoes(dataAdocoes);
       }
 
-      try {
-        const resUsuarios = await fetch(`${API_URL}/usuarios`);
-        if (resUsuarios.ok) {
-          const dataUsuarios = await resUsuarios.json();
-          setAvailableUsuarios(dataUsuarios);
-        } else {
-          setAvailableUsuarios([
-            { id: 1, nome: "Maria (Teste)" },
-            { id: 2, nome: "João (Teste)" }
-          ]);
-        }
-      } catch {
-        // funcionar mesmo sem o CRUD 2 pronto
-        setAvailableUsuarios([
-          { id: 1, nome: "Maria (Teste)" },
-          { id: 2, nome: "João (Teste)" }
-        ]);
+      // 3. Busca os usuários REAIS gravados pelo CRUD 2
+      const resUsuarios = await fetch(`${API_URL}/usuarios`);
+      if (resUsuarios.ok) {
+        const dataUsuarios = await resUsuarios.json();
+        setAvailableUsuarios(dataUsuarios);
       }
 
     } catch (err) {
       console.error("Erro ao conectar com o backend:", err);
-      setError("Nota: Rodando com contingência. Verifique se o backend Node está ativo.");
+      setError("Não foi possível sincronizar os dados com o servidor.");
     }
   };
 

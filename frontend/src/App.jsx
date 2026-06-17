@@ -9,11 +9,9 @@ import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Pets from "./pages/Pets";
 import Usuarios from "./pages/Usuarios";
-import Relatorio from "./pages/Relatorio";
 import Voluntario from "./pages/Voluntario";
 import Como from "./pages/Como_Ajudar";
 import Catalogo from "./pages/Catalogo";
-import Concluido from "./pages/Concluido";
 
 import CRUD3 from "./pages/Adocoes";
 
@@ -34,8 +32,6 @@ function App() {
             <Route path="/usuarios" element={<Usuarios />} />
             <Route path="/catalogo" element={<Catalogo />} />
             <Route path="/crud3" element={<CRUD3 />} />
-            <Route path="/relatorio" element={<Relatorio />} />
-            <Route path="/concluido" element={<Concluido />} />
           </Route>
 
         </Routes>

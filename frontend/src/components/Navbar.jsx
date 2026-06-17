@@ -36,10 +36,6 @@ function Navbar() {
             <a className="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">Institucional</a>
 
             <div className="dropdown-menu">
-              {signed && (
-                <Link className="dropdown-item" to="/pets">Adicionar Pet</Link>
-              )}
-
               <a className="dropdown-item" href="https://observatorio3setor.org.br/lista-conheca-7-ongs-brasileiras-que-atuam-na-protecao-de-animais/" target="_blank" rel="noreferrer"> Projetos Sociais</a>
             </div>
           </li>
@@ -62,9 +58,11 @@ function Navbar() {
             <a className="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">Controle (ADM)</a>
 
             <div className="dropdown-menu">
-              <Link className="dropdown-item" to="/relatorio">Relatórios (JOIN)</Link>
+              <Link className="dropdown-item" to="/pets">Adicionar Pet (CRUD1)</Link>
               
-              <Link className="dropdown-item" to="/crud3">Adoção (CRUD3)</Link>
+              <Link className="dropdown-item" to="/usuarios">Usuários (CRUD2)</Link>
+
+              <Link className="dropdown-item" to="/crud3">Adoção (CRUD3 + JOIN)</Link>
             </div>
           </li>
           </>
@@ -74,7 +72,7 @@ function Navbar() {
         {/* Botões do lado direito da Navbar */}
         <Link to="/catalogo" className="btn btn-outline-info me-2" >Animais</Link>
 
-        <Link to="/voluntario" className="btn btn-outline-warning me-2">Seja voluntário</Link>
+        <Link to="/voluntario" className="btn btn-outline-warning me-2">Voluntariado</Link>
 
         {/* CONTROLE DINÂMICO DE LOGIN/LOGOUT */}
         {signed ? (

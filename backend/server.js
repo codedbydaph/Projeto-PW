@@ -1,24 +1,42 @@
+import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
 import mysql from 'mysql2/promise'; 
+import multer from 'multer';
+import path from 'path';
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 app.use(cors());
 app.use(express.json()); 
 
+// CONFIGURAÇÃO DO MULTER DIRECIONADA PARA O FRONTEND
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    // IMPORTANTE: Ajuste a quantidade de "../" dependendo de onde o seu server.js está.
+    // Exemplo: se o back e o front estão na mesma pasta raiz, você sai do back e entra no front:
+    cb(null, '../frontend/public/uploads/'); 
+  },
+  filename: function (req, file, cb) {
+    // Define um nome único para o arquivo
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    cb(null, uniqueSuffix + path.extname(file.originalname));
+  }
+});
+const upload = multer({ storage: storage });
 
 const db = await mysql.createConnection({
-  host: 'localhost',
-  user: 'root',  
-  password: 'SenhaNF', 
-  database: 'cafofo_db'
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,  
+  password: process.env.DB_PASSWORD, 
+  database: process.env.DB_NAME
 });
 
 console.log('Conectado com sucesso!');
 
-// CRUD 1 (pra aparecer na tabela do crud 3)
+// --- ROTAS CRUD ---
+// -- Crud 1 --
 app.get('/api/pets', async (req, res) => {
   try {
     const [rows] = await db.query('SELECT * FROM pets');
@@ -29,71 +47,80 @@ app.get('/api/pets', async (req, res) => {
   }
 });
 
-app.post('/api/pets', async (req, res) => {
-  const { imagem, nome, especie, idade, descricao, status } = req.body;
+// Cadastrar Pet
+app.post('/api/pets', upload.single('imagem'), async (req, res) => {
+  const { nome, especie, idade, descricao, status } = req.body;
+  
+  const imagemPath = req.file ? `/uploads/${req.file.filename}` : null;
+
   try {
     const [result] = await db.query(
       'INSERT INTO pets (imagem, nome, especie, idade, descricao, status) VALUES (?, ?, ?, ?, ?, ?)',
-      [imagem, nome, especie, idade, descricao, status]
+      [imagemPath, nome, especie, idade, descricao, status]
     );
     res.status(201).json({
-      id: result.insertId,
-      imagem,
-      nome,
-      especie,
-      idade,
-      descricao,
-      status
+      id: result.insertId, imagem: imagemPath, nome, especie, idade, descricao, status
     });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Erro ao cadastrar pet.' });
   }
 });
-
-app.put('/api/pets/:id', async (req, res) => {
+// Editar Pet
+app.put('/api/pets/:id', upload.single('imagem'), async (req, res) => {
   const { id } = req.params;
-  const {imagem, nome, especie, idade, descricao, status} = req.body;
+  const { nome, especie, idade, descricao, status } = req.body;
+  
   try {
-    await db.query(
-      'UPDATE pets SET imagem = ?, nome = ?, especie = ?, idade = ?, descricao = ? ,status = ? WHERE id = ?',
-      [imagem, nome, especie, idade, descricao, status]
-    );
-    res.json({
-      message: 'Pet atualizado com sucesso!'
-    });
+    if (req.file) {
+      const imagemPath = `/uploads/${req.file.filename}`;
+      await db.query(
+        'UPDATE pets SET imagem = ?, nome = ?, especie = ?, idade = ?, descricao = ? ,status = ? WHERE id = ?',
+        [imagemPath, nome, especie, idade, descricao, status, id]
+      );
+    } else {
+      await db.query(
+        'UPDATE pets SET nome = ?, especie = ?, idade = ?, descricao = ? ,status = ? WHERE id = ?',
+        [nome, especie, idade, descricao, status, id]
+      );
+    }
+    res.json({ message: 'Pet atualizado com sucesso!' });
   } catch (error) {
     console.error(error);
-    res.status(500).json({
-      error: 'Erro ao atualizar pet.'
-    });
+    res.status(500).json({ error: 'Erro ao atualizar pet.' });
   }
 });
 
 app.delete('/api/pets/:id', async (req, res) => {
   const { id } = req.params;
   try {
-    await db.query(
-      'DELETE FROM pets WHERE id = ?',
-      [id]
-    );
-    res.json({
-      message: 'Pet removido com sucesso!'
-    });
+    await db.query('DELETE FROM pets WHERE id = ?', [id]);
+    res.json({ message: 'Pet removido com sucesso!' });
   } catch (error) {
     console.error(error);
-    res.status(500).json({
-      error: 'Erro ao remover pet.'
-    });
+    res.status(500).json({ error: 'Erro ao remover pet.' });
   }
 });
 
-// CRUD 2: USUÁRIOS (preenchido pro 3 poder ser feito)
+// CRUD 2: USUÁRIOS 
 
 // 1. Rota de Leitura (Listar os usuários no CRUD 3)
 app.get('/api/usuarios', async (req, res) => {
   try {
-    const [rows] = await db.query('SELECT id, nome FROM usuarios');
+    const querySql = `
+      SELECT 
+        id, 
+        nome, 
+        sobrenome, 
+        endereco, 
+        endereco2, 
+        cidade, 
+        estado, 
+        cep 
+      FROM usuarios
+    `;
+
+    const [rows] = await db.query(querySql);
     res.json(rows);
   } catch (error) {
     console.error('Erro ao buscar usuários do banco:', error);
@@ -103,11 +130,36 @@ app.get('/api/usuarios', async (req, res) => {
 
 // 2. Rota de Criação (Salva novos usuários no banco)
 app.post('/api/usuarios', async (req, res) => {
-  const { nome, email, telefone } = req.body;
+  const { nome, sobrenome, endereco, endereco2, cidade, estado, cep } = req.body;
+
   try {
-    const querySql = 'INSERT INTO usuarios (nome, email, telefone) VALUES (?, ?, ?)';
-    const [result] = await db.query(querySql, [nome, email, telefone]);
-    res.status(201).json({ id: result.insertId, nome, email, telefone });
+    const querySql = `
+      INSERT INTO usuarios 
+        (nome, sobrenome, endereco, endereco2, cidade, estado, cep) 
+      VALUES 
+        (?, ?, ?, ?, ?, ?, ?)
+    `;
+
+    const [result] = await db.query(querySql, [
+      nome,
+      sobrenome,
+      endereco,
+      endereco2,
+      cidade,
+      estado,
+      cep
+    ]);
+
+    res.status(201).json({
+      id: result.insertId,
+      nome,
+      sobrenome,
+      endereco,
+      endereco2,
+      cidade,
+      estado,
+      cep
+    });
   } catch (error) {
     console.error('Erro ao cadastrar usuário:', error);
     res.status(500).json({ error: 'Erro ao cadastrar o usuário.' });
@@ -117,11 +169,34 @@ app.post('/api/usuarios', async (req, res) => {
 // 3. Rota de Edição (Atualiza os dados de um usuário existente)
 app.put('/api/usuarios/:id', async (req, res) => {
   const { id } = req.params;
-  const { nome, email, telefone } = req.body;
+  const { nome, sobrenome, endereco, endereco2, cidade, estado, cep } = req.body;
+
   try {
-    const querySql = 'UPDATE usuarios SET nome = ?, email = ?, telefone = ? WHERE id = ?';
-    await db.query(querySql, [nome, email, telefone, id]);
-    res.json({ message: 'Usuário updated com sucesso!' });
+    const querySql = `
+      UPDATE usuarios 
+      SET 
+        nome = ?, 
+        sobrenome = ?, 
+        endereco = ?, 
+        endereco2 = ?, 
+        cidade = ?, 
+        estado = ?, 
+        cep = ? 
+      WHERE id = ?
+    `;
+
+    await db.query(querySql, [
+      nome,
+      sobrenome,
+      endereco,
+      endereco2,
+      cidade,
+      estado,
+      cep,
+      id
+    ]);
+
+    res.json({ message: 'Usuário atualizado com sucesso!' });
   } catch (error) {
     console.error('Erro ao atualizar usuário:', error);
     res.status(500).json({ error: 'Erro ao atualizar o usuário.' });
@@ -131,6 +206,7 @@ app.put('/api/usuarios/:id', async (req, res) => {
 // 4. Rota de Exclusão (Deleta um usuário do banco)
 app.delete('/api/usuarios/:id', async (req, res) => {
   const { id } = req.params;
+
   try {
     await db.query('DELETE FROM usuarios WHERE id = ?', [id]);
     res.json({ message: 'Usuário excluído com sucesso!' });
@@ -178,7 +254,6 @@ app.delete('/api/adocoes/:id', async (req, res) => {
   }
 });
 
-
 // RELATÓRIO COM JOIN 
 
 app.get('/api/relatorio-join', async (req, res) => {
@@ -190,25 +265,17 @@ app.get('/api/relatorio-join', async (req, res) => {
         adocoes.usuarioId AS usuarioId,
         adocoes.dataAdocao AS data,
         pets.nome AS nomePet,
-        pets.especie AS especiePet
+        pets.especie AS especiePet,
+        usuarios.nome AS nomeAdotante,
+        usuarios.sobrenome AS sobrenomeAdotante
       FROM adocoes
       INNER JOIN pets ON adocoes.petId = pets.id
+      INNER JOIN usuarios ON adocoes.usuarioId = usuarios.id
     `;
+
     const [rows] = await db.query(queryJoin);
-    
 
-    const usuariosMock = {
-      1: "Maria Silva (Teste)",
-      2: "João Pedro (Teste)",
-      3: "Milani (Teste)"
-    };
-
-    const dadosFormatados = rows.map(row => ({
-      ...row,
-      nomeAdotante: usuariosMock[row.usuarioId] || "Adotante Desconhecido"
-    }));
-
-    res.json(dadosFormatados);
+    res.json(rows);
   } catch (error) {
     console.error('Erro no relatório JOIN:', error);
     res.status(500).json({ error: 'Erro no relatório' });
