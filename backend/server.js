@@ -126,25 +126,41 @@ app.get('/api/usuarios', async (req, res) => {
 
 // 2. Rota de Criação (Salva novos usuários no banco)
 
-// Rota de Usuários Atualizada para suportar o fluxo do Gmail
 app.post('/api/usuarios', async (req, res) => {
-  const { nome, email, telefone } = req.body;
-  try {
-    // Verifica se o e-mail do Gmail já está no banco
-    const [existente] = await db.query('SELECT id FROM usuarios WHERE email = ?', [email]);
-    
-    if (existente.length > 0) {
-      // Se já existe, apenas retorna o ID existente com status 200 OK
-      return res.status(200).json({ id: existente[0].id, message: 'Usuário já cadastrado.' });
-    }
+  // Captura os dados que o frontend enviou
+  const { nome, sobrenome, email, endereco, cidade, estado, cep } = req.body;
 
-    // Se não existe, cria o registro do usuário
-    const querySql = 'INSERT INTO usuarios (nome, email, telefone) VALUES (?, ?, ?)';
-    const [result] = await db.query(querySql, [nome, email, telefone]);
-    res.status(201).json({ id: result.insertId, nome, email, telefone });
+  try {
+    const queryVerificar = 'SELECT id FROM usuarios WHERE email = ?';
+    const [usuariosExistentes] = await db.query(queryVerificar, [email]);
+
+    if (usuariosExistentes.length > 0) {
+      console.log(`Usuário com o e-mail ${email} já existe. Retornando ID existente.`);
+      return res.status(200).json({ 
+        id: usuariosExistentes[0].id, 
+        message: 'Usuário já cadastrado anteriormente.' 
+      });
+    }
+    const queryInserir = `
+      INSERT INTO usuarios (nome, sobrenome, email, endereco, cidade, estado, cep) 
+      VALUES (?, ?, ?, ?, ?, ?, ?)
+    `;
+    
+    const [result] = await db.query(queryInserir, [
+      nome, 
+      sobrenome || '', 
+      email, 
+      endereco || 'Não informado', 
+      cidade || 'Não informado', 
+      estado || 'DF', 
+      cep || '00000-000'
+    ]);
+
+    res.status(201).json({ id: result.insertId, nome, email });
+
   } catch (error) {
-    console.error('Erro ao cadastrar usuário:', error);
-    res.status(500).json({ error: 'Erro ao processar o usuário.' });
+    console.error('Erro ao processar o cadastro de usuário:', error);
+    res.status(500).json({ error: 'Erro interno ao salvar o usuário.' });
   }
 });
 
