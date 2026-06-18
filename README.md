@@ -11,8 +11,23 @@ O projeto foi construído utilizando uma arquitetura moderna e dividida em ecoss
 * **Frontend:** React (estruturado com **Vite** para máxima performance e Hot Module Replacement).
 * **Backend:** Node.js com Express (API RESTful estruturada em ES Modules).
 * **Banco de Dados:** MySQL (banco relacional para persistência e integridade dos dados via Chaves Estrangeiras).
-* **Autenticação:** Firebase Auth.
+* **Autenticação:** Firebase Auth (E-mail/Senha + Provedor Google).
 * **Uploads:** Multer (gerenciamento local de imagens integrado diretamente à pasta pública do frontend).
+
+---
+
+## 🔐 Controle de Acesso e Regras de Negócio (RBAC)
+
+O sistema foi atualizado para implementar um controle de permissões baseado em níveis de acesso (*Role-Based Access Control*), dividindo a experiência da plataforma em duas categorias:
+
+### 👤 1. Usuário Comum (Autenticação via Google/Gmail)
+* **Acesso ao Catálogo:** Pode visualizar de forma pública todos os animais disponíveis.
+* **Solicitação Reativa ("Quero Adotar"):** Ao clicar no botão de adoção de um pet, o sistema identifica automaticamente a sessão ativa do Gmail do usuário, cria/vincula dinamicamente os dados dele na tabela `usuarios` (CRUD 2) e dispara o registro de intenção de adoção na tabela pivô `adocoes` (CRUD 3).
+* **Privacidade e Proteção:** O formulário de cadastro de *Pets* e *Usuários* permanece totalmente visível e funcional para inserções. No entanto, as tabelas inferiores que contêm as listagens históricas de dados cadastrados (e os botões de **Editar** ou **Excluir**) ficam completamente ocultas para proteger a privacidade das informações.
+
+### 👑 2. Administrador (Login Tradicional)
+* **Gerenciamento Total (CRUDs 1, 2 e 3):** Possui privilégios totais de escrita, alteração e exclusão física de registros de Pets e Adotantes.
+* **Acesso ao Histórico Geral:** É o único nível de acesso que visualiza os blocos ocultos de listagem no sistema e o menu de **Adoções (CRUD 3 + JOIN)** no dropdown da Navbar, onde são auditadas todas as solicitações recebidas a partir do catálogo.
 
 ---
 
@@ -20,7 +35,7 @@ O projeto foi construído utilizando uma arquitetura moderna e dividida em ecoss
 
 O sistema conta com três tabelas principais totalmente integradas por relacionamentos relacionais (`INNER JOIN`):
 * **`pets`:** Armazena o catálogo de animais, caminhos de imagem e status.
-* **`usuarios`:** Dados dos adotantes cadastrados no sistema.
+* **`usuarios`:** Dados dos adotantes cadastrados no sistema (incluindo usuários integrados via Google Login).
 * **`adocoes`:** Tabela pivot que une o Adotante ao Peludo escolhido com restrições de `ON DELETE CASCADE`.
 
 ---
@@ -35,7 +50,7 @@ Siga o passo a passo abaixo para configurar os ambientes de desenvolvimento.
 3. Esse script criará automaticamente o banco `cafofo_db`, a estrutura correta das tabelas e uma carga inicial de dados de teste.
 
 ### 2. Configuração das Variáveis de Ambiente (`.env`)
-Como os arquivos de credenciais são ocultados por boas práticas de segurança (`.gitignore`), você precisará criar um arquivo chamado **`.env`** dentro da pasta `/backend` (ou na raiz, conforme sua árvore de diretórios) contendo a seguinte estrutura:
+Como os arquivos de credenciais são ocultados por boas práticas de segurança (`.gitignore`), você precisará criar um arquivo chamado **`.env`** dentro da pasta `/backend` contendo a seguinte estrutura:
 
 ```env
 # 🔌 CONFIGURAÇÕES DO BACKEND (NODE / EXPRESS)
@@ -54,20 +69,31 @@ VITE_FIREBASE_MESSAGING_SENDER_ID=192887255284
 VITE_FIREBASE_APP_ID=1:192887255284:web:8b32720cd120ef805eeea1
 ```
 
+
 ### 3. Executando (inicializar o Front e o Back)
-No seu terminal, navegue até as pasta do backend e frontend, depois instale as dependências:
+No seu terminal, navegue até as pastas do backend e frontend para instalar as dependências e iniciar os servidores:
 
 ```
-cd backend / cd frontend
+# No terminal do Backend
+cd backend
 npm install
 npm start
+
+# Em outro terminal para o Frontend
+cd frontend
+npm install
+npm run dev
 ```
 
 ---
 
-## 🔐 Credenciais de Teste (Firebase Auth)
+## 🔐 Credenciais de Teste (Níveis de Acesso)
 
-Para testar a tela de login e o fluxo de autenticação integrado ao Firebase durante a avaliação, utilize os seguintes dados cadastrados:
+Para testar os diferentes fluxos da aplicação durante a avaliação do projeto, utilize os seguintes métodos:
 
+### Conta de Administrador
 * **E-mail:** `joaozinho@teste.com`
 * **Senha:** `123456`
+
+### Conta de Usuário Comum
+* **Clique no botão "Entrar com o Google" e autentique-se de forma real com qualquer conta do Gmail para testar o fluxo de adoção rápida do catálogo e as restrições de visibilidade das tabelas.
