@@ -16,21 +16,6 @@ O projeto foi construído utilizando uma arquitetura moderna e dividida em ecoss
 
 ---
 
-## 🔐 Controle de Acesso e Regras de Negócio (RBAC)
-
-O sistema foi atualizado para implementar um controle de permissões baseado em níveis de acesso (*Role-Based Access Control*), dividindo a experiência da plataforma em duas categorias:
-
-### 👤 1. Usuário Comum (Autenticação via Google/Gmail)
-* **Acesso ao Catálogo:** Pode visualizar de forma pública todos os animais disponíveis.
-* **Solicitação Reativa ("Quero Adotar"):** Ao clicar no botão de adoção de um pet, o sistema identifica automaticamente a sessão ativa do Gmail do usuário, cria/vincula dinamicamente os dados dele na tabela `usuarios` (CRUD 2) e dispara o registro de intenção de adoção na tabela pivô `adocoes` (CRUD 3).
-* **Privacidade e Proteção:** O formulário de cadastro de *Pets* e *Usuários* permanece totalmente visível e funcional para inserções. No entanto, as tabelas inferiores que contêm as listagens históricas de dados cadastrados (e os botões de **Editar** ou **Excluir**) ficam completamente ocultas para proteger a privacidade das informações.
-
-### 👑 2. Administrador (Login Tradicional)
-* **Gerenciamento Total (CRUDs 1, 2 e 3):** Possui privilégios totais de escrita, alteração e exclusão física de registros de Pets e Adotantes.
-* **Acesso ao Histórico Geral:** É o único nível de acesso que visualiza os blocos ocultos de listagem no sistema e o menu de **Adoções (CRUD 3 + JOIN)** no dropdown da Navbar, onde são auditadas todas as solicitações recebidas a partir do catálogo.
-
----
-
 ## 📋 Arquitetura do Banco de Dados (MySQL)
 
 O sistema conta com três tabelas principais totalmente integradas por relacionamentos relacionais (`INNER JOIN`):
@@ -96,4 +81,19 @@ Para testar os diferentes fluxos da aplicação durante a avaliação do projeto
 * **Senha:** `123456`
 
 ### Conta de Usuário Comum
-* **Clique no botão "Entrar com o Google" e autentique-se de forma real com qualquer conta do Gmail para testar o fluxo de adoção rápida do catálogo e as restrições de visibilidade das tabelas.
+* **Clique no botão "Entrar com o Google"** e autentique-se de forma real com qualquer conta do Gmail para testar o fluxo de adoção rápida do catálogo e as restrições de visibilidade das tabelas.
+
+---
+
+## Regras de Negócio (RBAC)
+
+O sistema foi atualizado para implementar um controle de permissões baseado em níveis de acesso (*Role-Based Access Control*), dividindo a experiência da plataforma em duas categorias:
+
+### 👤 1. Usuário Comum (Autenticação via Google/Gmail)
+* **Acesso ao Catálogo:** Pode visualizar de forma pública todos os animais disponíveis.
+* **Solicitação Reativa ("Quero Adotar"):** Ao clicar no botão de adoção de um pet, o sistema identifica automaticamente a sessão ativa do Gmail do usuário, cria/vincula dinamicamente os dados dele na tabela `usuarios` (CRUD 2) e dispara o registro de intenção de adoção na tabela pivô `adocoes` (CRUD 3).
+* **Privacidade e Proteção:** O formulário de cadastro de *Pets* e *Usuários* permanece totalmente visível e funcional para inserções. No entanto, as tabelas inferiores que contêm as listagens históricas de dados cadastrados (e os botões de **Editar** ou **Excluir**) ficam completamente ocultas para proteger a privacidade das informações.
+
+### 👤 2. Administrador (Login Tradicional)
+* **Gerenciamento Total (CRUDs 1, 2 e 3):** Possui privilégios totais de escrita, alteração e exclusão física de registros de Pets e Adotantes.
+* **Acesso ao Histórico Geral:** É o único nível de acesso que visualiza os blocos ocultos de listagem no sistema e o menu de **Adoções (CRUD 3 + JOIN)** no dropdown da Navbar, onde são auditadas todas as solicitações recebidas a partir do catálogo.
