@@ -127,40 +127,34 @@ app.get('/api/usuarios', async (req, res) => {
 // 2. Rota de Criação (Salva novos usuários no banco)
 
 app.post('/api/usuarios', async (req, res) => {
-  // Captura os dados que o frontend enviou
-  const { nome, sobrenome, email, endereco, cidade, estado, cep } = req.body;
-
+  const { nome, sobrenome, email, telefone, endereco, endereco2, cidade, estado, cep } = req.body;
+  
   try {
     const queryVerificar = 'SELECT id FROM usuarios WHERE email = ?';
     const [usuariosExistentes] = await db.query(queryVerificar, [email]);
 
     if (usuariosExistentes.length > 0) {
       console.log(`Usuário com o e-mail ${email} já existe. Retornando ID existente.`);
-      return res.status(200).json({ 
-        id: usuariosExistentes[0].id, 
-        message: 'Usuário já cadastrado anteriormente.' 
-      });
+      return res.status(200).json({ id: usuariosExistentes[0].id });
     }
-    const queryInserir = `
-      INSERT INTO usuarios (nome, sobrenome, email, endereco, cidade, estado, cep) 
-      VALUES (?, ?, ?, ?, ?, ?, ?)
-    `;
-    
-    const [result] = await db.query(queryInserir, [
+
+    const querySql = 'INSERT INTO usuarios (nome, sobrenome, email, telefone, endereco, endereco2, cidade, estado, cep) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)';
+    const [result] = await db.query(querySql, [
       nome, 
-      sobrenome || '', 
+      sobrenome || null, 
       email, 
-      endereco || 'Não informado', 
-      cidade || 'Não informado', 
-      estado || 'DF', 
-      cep || '00000-000'
+      telefone || null, 
+      endereco || null, 
+      endereco2 || null, 
+      cidade || null, 
+      estado || null, 
+      cep || null
     ]);
-
-    res.status(201).json({ id: result.insertId, nome, email });
-
+    
+    res.status(201).json({ id: result.insertId });
   } catch (error) {
-    console.error('Erro ao processar o cadastro de usuário:', error);
-    res.status(500).json({ error: 'Erro interno ao salvar o usuário.' });
+    console.error('Erro ao processar usuário:', error);
+    res.status(500).json({ error: 'Erro ao inserir o registro.' });
   }
 });
 
@@ -217,14 +211,16 @@ app.delete('/api/usuarios/:id', async (req, res) => {
 // CRUD 3
 
 app.post('/api/adocoes', async (req, res) => {
-  const { petId, usuarioId, dataAdocao } = req.body;
+  // O front envia camelCase (petId, usuarioId, dataAdocao)
+  const { petId, usuarioId, dataAdocao } = req.body; 
+  
   try {
-    const querySql = 'INSERT INTO adocoes (petId, usuarioId, dataAdocao) VALUES (?, ?, ?)';
+    const querySql = 'INSERT INTO adocoes (pet_id, usuario_id, data_adocao) VALUES (?, ?, ?)';
     const [result] = await db.query(querySql, [petId, usuarioId, dataAdocao]);
-    res.status(201).json({ id: result.insertId, petId, usuarioId, dataAdocao });
+    res.status(201).json({ id: result.insertId });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Erro ao registrar a adoção.' });
+    console.error("Erro ao inserir adoção:", error);
+    res.status(500).json({ error: 'Erro ao inserir o registro de adoção.' });
   }
 });
 
@@ -259,24 +255,22 @@ app.get('/api/relatorio-join', async (req, res) => {
     const queryJoin = `
       SELECT 
         adocoes.id AS id,
-        adocoes.petId AS petId,
-        adocoes.usuarioId AS usuarioId,
-        adocoes.dataAdocao AS data,
+        adocoes.pet_id AS petId,
+        adocoes.usuario_id AS usuarioId,
+        adocoes.data_adocao AS data,
         pets.nome AS nomePet,
         pets.especie AS especiePet,
         usuarios.nome AS nomeAdotante,
         usuarios.sobrenome AS sobrenomeAdotante
       FROM adocoes
-      INNER JOIN pets ON adocoes.petId = pets.id
-      INNER JOIN usuarios ON adocoes.usuarioId = usuarios.id
+      INNER JOIN pets ON adocoes.pet_id = pets.id
+      INNER JOIN usuarios ON adocoes.usuario_id = usuarios.id
     `;
-
     const [rows] = await db.query(queryJoin);
-
     res.json(rows);
   } catch (error) {
-    console.error('Erro no relatório JOIN:', error);
-    res.status(500).json({ error: 'Erro no relatório' });
+    console.error("Erro no relatório JOIN:", error);
+    res.status(500).json({ error: 'Erro ao buscar o relatório.' });
   }
 });
 

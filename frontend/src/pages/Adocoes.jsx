@@ -156,18 +156,22 @@ function Adocoes() {
 
               <div className="mb-3 text-start">
                 <label className="form-label d-block text-muted fw-bold"> Selecionar Adotante:</label>
-                <select
-                  className="form-select"
-                  value={usuarioId}
-                  onChange={(e) => setUsuarioId(e.target.value)}
-                >
-                  <option value="">Escolha um adotante...</option>
-                  {availableUsuarios.map((user) => (
-                    <option key={user.id} value={user.id}>
-                      {user.nome}
-                    </option>
-                  ))}
-                </select>
+                  <select
+                    className="form-select"
+                    value={usuarioId}
+                    onChange={(e) => setUsuarioId(e.target.value)}
+                  >
+                    <option value="">Escolha um adotante...</option>
+                    
+                    {availableUsuarios
+                      .filter((user, index, self) => self.findIndex(u => u.id === user.id) === index)
+                      .map((user) => (
+                        <option key={user.id} value={user.id}>
+                          {user.nome}
+                        </option>
+                      ))
+                    }
+                  </select>
               </div>
 
               <div className="mb-3 text-start">

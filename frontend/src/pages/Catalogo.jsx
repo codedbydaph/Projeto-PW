@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useNavigate } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import "../style/global.css";
 
@@ -7,22 +7,22 @@ function Catalogo() {
 
   const [pets, setPets] = useState([]);
 
+  const [modalAberto, setModalAberto] = useState(false);
+  const [petSelecionado, setPetSelecionado] = useState(null);
+  const [mensagemSucesso, setMensagemSucesso] = useState("");
+
   useEffect(() => {
     carregarPets();
   }, []);
 
   async function carregarPets() {
     try {
-      // 1. Busca todos os pets do banco
       const responsePets = await fetch("http://localhost:3000/api/pets");
       const todosOsPets = await responsePets.json();
 
-      // 2. Busca as adoções reais direto do seu JOIN
       const responseAdocoes = await fetch("http://localhost:3000/api/relatorio-join");
       const adocoesReais = await responseAdocoes.json();
 
-      // 3. REGRA DE NEGÓCIO: O pet só aparece se o status for "Disponível" 
-      // E se o ID dele NÃO estiver em nenhuma adoção ativa no banco!
       const petsDisponiveis = todosOsPets.filter((pet) => {
         const jaAdotado = adocoesReais.some((adocao) => Number(adocao.petId) === Number(pet.id));
         return pet.status === "Disponível" && !jaAdotado;
@@ -35,50 +35,75 @@ function Catalogo() {
   }
 
   const petsPorLinha = [];
-
   for (let i = 0; i < pets.length; i += 4) {
     petsPorLinha.push(pets.slice(i, i + 4));
   }
 
-  async function handleSolicitarAdocao(petId) {
-  const userEmail = sessionStorage.getItem("userEmail");
-  const userName = sessionStorage.getItem("userName");
-
-  // bloqueia a ação se não tiver login nenhum ativo
-  if (!userEmail) {
-    alert("Você precisa estar logado para solicitar uma adoção!");
-    return;
+  function iniciarSolicitacao(pet) {
+    const userEmail = sessionStorage.getItem("userEmail");
+    if (!userEmail) {
+      alert("Você precisa estar logado para solicitar uma adoção!");
+      return;
+    }
+    // Abre o modal visual passando o pet escolhido
+    setPetSelecionado(pet);
+    setModalAberto(true);
   }
 
-  if (!window.confirm("Deseja enviar uma solicitação de adoção para este pet?")) {
+  async function confirmarAdocao() {
+  const userEmail = sessionStorage.getItem("userEmail"); 
+  const userName = sessionStorage.getItem("userName") || "Usuário";
+
+  if (!userEmail) {
+    alert("Erro: E-mail do usuário não encontrado na sessão. Faça login novamente.");
     return;
   }
 
   try {
-    // garante o vínculo do usuário do Gmail no MySQL (CRUD 2)
     const resUsuario = await fetch("http://localhost:3000/api/usuarios", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ nome: userName, email: userEmail, telefone: "(00) 00000-0000" })
+      body: JSON.stringify({ 
+        nome: userName, 
+        email: userEmail, 
+        sobrenome: "",
+        telefone: "(00) 00000-0000",
+        endereco: "Não informado",
+        cidade: "Não informado",
+        estado: "DF",
+        cep: "00000-000"
+      })
     });
 
     const dadosUsuario = await resUsuario.json();
-    const usuarioId = resUsuario.ok ? dadosUsuario.id : dadosUsuario.idIdExistente;
+    const usuarioId = dadosUsuario.id;
 
-    // envia a solicitação para a tabela de adocoes (CRUD 3)
+    if (!usuarioId) {
+      console.error("Não foi possível obter o ID do usuário.");
+      return;
+    }
+
     const hoje = new Date().toISOString().split('T')[0];
+
+    // 2. Registra a adoção vinculando ao ID correto
     const resAdocao = await fetch("http://localhost:3000/api/adocoes", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ petId: Number(petId), usuarioId: Number(usuarioId), dataAdocao: hoje })
+      body: JSON.stringify({ 
+        petId: Number(petSelecionado.id), 
+        usuarioId: Number(usuarioId), 
+        dataAdocao: hoje 
+      })
     });
 
     if (resAdocao.ok) {
-      alert("✨ Solicitação enviada com sucesso! Ela foi encaminhada para a aprovação do Administrador.");
+      setModalAberto(false);
+      setMensagemSucesso(`✨ Solicitação enviada com sucesso! O ${petSelecionado.nome} foi encaminhado para aprovação.`);
+      setTimeout(() => setMensagemSucesso(""), 4000);
       carregarPets(); 
     }
   } catch (error) {
-    console.error(error);
+    console.error("Erro no fluxo de adoção:", error);
   }
 }
 
@@ -86,19 +111,27 @@ function Catalogo() {
     <>
       <div className="banner-adocao">
         <h1 className="h1c">Campanha de adoção</h1>
-
         <p>
           No Cafofo dos Peludos, acreditamos que cada animal merece uma
-          chance de ser amado. Somos um abrigo dedicado a acolher aqueles
-          que não tiveram um começo fácil, mas que, com o apoio de pessoas
-          como você, podem encontrar um novo lar e um futuro cheio de carinho.
-        </p>
-
-        <p>
-          Nosso objetivo é criar um mundo onde todos os animais tenham um lar
-          seguro e cheio de amor. Junte-se a nós nessa missão!
+          chance de ser amado...
         </p>
       </div>
+      {mensagemSucesso && (
+        <div style={{
+          backgroundColor: "#d4edda",
+          color: "#155724",
+          padding: "15px",
+          borderRadius: "8px",
+          margin: "20px auto",
+          maxWidth: "800px",
+          textAlign: "center",
+          fontWeight: "bold",
+          border: "1px solid #c3e6cb",
+          boxShadow: "0 4px 6px rgba(0,0,0,0.05)"
+        }}>
+          {mensagemSucesso}
+        </div>
+      )}
 
       <h3>Pets disponíveis</h3>
 
@@ -111,26 +144,15 @@ function Catalogo() {
           <div key={index} className="container">
             {grupo.map((pet) => (
               <div key={pet.id} className="card">
-
                 <div className="card-body">
-                  <img
-                    className="card-img-top"
-                    src={pet.imagem}
-                    alt={pet.nome}
-                  />
-
-                  <h5 className="card-title">
-                    {pet.nome}
-                  </h5>
-
+                  <img className="card-img-top" src={pet.imagem} alt={pet.nome} />
+                  <h5 className="card-title">{pet.nome}</h5>
                   <p className="card-text">
-                    {pet.idade}
-                    <br />
-                    Espécie: {pet.especie}  <br />
+                    {pet.idade}<br />
+                    Espécie: {pet.especie}<br />
                     {pet.descricao}
                   </p>
-
-                  <button className="btn btn-info w-100 fw-bold text-white mt-2" onClick={() => handleSolicitarAdocao(pet.id)}>
+                  <button className="btn btn-info w-100 fw-bold text-white mt-2" onClick={() => iniciarSolicitacao(pet)}>
                       Quero Adotar
                   </button>
                 </div>
@@ -138,6 +160,53 @@ function Catalogo() {
             ))}
           </div>
         ))
+      )}
+
+      {modalAberto && (
+        <div style={{
+          position: "fixed",
+          top: 0, left: 0, width: "100%", height: "100%",
+          backgroundColor: "rgba(0, 0, 0, 0.5)",
+          display: "flex", alignItems: "center", justifyContent: "center",
+          zIndex: 1000
+        }}>
+          <div style={{
+            backgroundColor: "#fff",
+            padding: "30px",
+            borderRadius: "12px",
+            maxWidth: "450px",
+            width: "90%",
+            textAlign: "center",
+            boxShadow: "0 10px 25px rgba(0,0,0,0.2)"
+          }}>
+            <span style={{ fontSize: "50px" }}>🐾</span>
+            <h4 style={{ margin: "15px 0 10px 0", color: "#2c3e50" }}>Confirmar Solicitação</h4>
+            <p style={{ color: "#7f8c8d", fontSize: "15px" }}>
+              Você tem certeza que deseja enviar uma solicitação de adoção para o peludo <strong>{petSelecionado?.nome}</strong>?
+            </p>
+            
+            <div style={{ display: "flex", gap: "10px", marginTop: "25px" }}>
+              <button 
+                onClick={() => setModalAberto(false)}
+                style={{
+                  flex: 1, padding: "10px", borderRadius: "6px", border: "1px solid #ccc",
+                  backgroundColor: "#fff", color: "#333", fontWeight: "bold", cursor: "pointer"
+                }}
+              >
+                Cancelar
+              </button>
+              <button 
+                onClick={confirmarAdocao}
+                style={{
+                  flex: 1, padding: "10px", borderRadius: "6px", border: "none",
+                  backgroundColor: "#17a2b8", color: "#fff", fontWeight: "bold", cursor: "pointer"
+                }}
+              >
+                Sim, Quero Adotar!
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </>
   );
