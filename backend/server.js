@@ -228,7 +228,7 @@ app.put('/api/adocoes/:id', async (req, res) => {
   const { id } = req.params;
   const { petId, usuarioId, dataAdocao } = req.body;
   try {
-    const querySql = 'UPDATE adocoes SET petId = ?, usuarioId = ?, dataAdocao = ? WHERE id = ?';
+    const querySql = 'UPDATE adocoes SET pet_id = ?, usuario_id = ?, data_adocao = ? WHERE id = ?';
     await db.query(querySql, [petId, usuarioId, dataAdocao, id]);
     res.json({ message: 'Adoção atualizada com sucesso!' });
   } catch (error) {

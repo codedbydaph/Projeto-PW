@@ -164,7 +164,9 @@ function Adocoes() {
                     <option value="">Escolha um adotante...</option>
                     
                     {availableUsuarios
-                      .filter((user, index, self) => self.findIndex(u => u.id === user.id) === index)
+                      .filter((user, index, self) => 
+                          self.findIndex(u => u.nome === user.nome && u.sobrenome === user.sobrenome) === index
+                        )
                       .map((user) => (
                         <option key={user.id} value={user.id}>
                           {user.nome}
@@ -218,31 +220,35 @@ function Adocoes() {
                     </tr>
                   </thead>
                   <tbody>
-                    {adocoes.map((item) => (
-                      <tr key={item.id}>
-                        <td className="fw-bold text-start">{item.nomeAdotante}</td>
-                        <td className="text-start">
-                          <span className="badge bg-info">{item.nomePet}</span>
-                        </td>
-                        <td className="text-start">
-                          {item.data ? new Date(item.data).toLocaleDateString('pt-BR', {timeZone: 'UTC'}) : "---"}
-                        </td>
-                        <td className="text-end">
-                          <button
-                            className="btn btn-sm btn-outline-primary me-2"
-                            onClick={() => handleEdit(item)}
-                          >
-                            Editar
-                          </button>
-                          <button
-                            className="btn btn-sm btn-outline-danger"
-                            onClick={() => handleDelete(item.id)}
-                          >
-                            Excluir
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
+                    {adocoes
+                      // 🌟 FILTRO: Garante que cada registro de adoção (ID único da tabela pivot) só apareça uma vez na listagem
+                      .filter((item, index, self) => self.findIndex(a => a.id === item.id) === index)
+                      .map((item) => (
+                        <tr key={item.id}>
+                          <td className="fw-bold text-start">{item.nomeAdotante}</td>
+                          <td className="text-start">
+                            <span className="badge bg-info">{item.nomePet}</span>
+                          </td>
+                          <td className="text-start">
+                            {item.data ? new Date(item.data).toLocaleDateString('pt-BR', {timeZone: 'UTC'}) : "---"}
+                          </td>
+                          <td className="text-end">
+                            <button
+                              className="btn btn-sm btn-outline-primary me-2"
+                              onClick={() => handleEdit(item)}
+                            >
+                              Editar
+                            </button>
+                            <button
+                              className="btn btn-sm btn-outline-danger"
+                              onClick={() => handleDelete(item.id)}
+                            >
+                              Excluir
+                            </button>
+                          </td>
+                        </tr>
+                      ))
+                    }
                   </tbody>
                 </table>
               </div>
