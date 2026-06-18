@@ -125,40 +125,26 @@ app.get('/api/usuarios', async (req, res) => {
 });
 
 // 2. Rota de Criação (Salva novos usuários no banco)
+
+// Rota de Usuários Atualizada para suportar o fluxo do Gmail
 app.post('/api/usuarios', async (req, res) => {
-  const { nome, sobrenome, endereco, endereco2, cidade, estado, cep } = req.body;
-
+  const { nome, email, telefone } = req.body;
   try {
-    const querySql = `
-      INSERT INTO usuarios 
-        (nome, sobrenome, endereco, endereco2, cidade, estado, cep) 
-      VALUES 
-        (?, ?, ?, ?, ?, ?, ?)
-    `;
+    // Verifica se o e-mail do Gmail já está no banco
+    const [existente] = await db.query('SELECT id FROM usuarios WHERE email = ?', [email]);
+    
+    if (existente.length > 0) {
+      // Se já existe, apenas retorna o ID existente com status 200 OK
+      return res.status(200).json({ id: existente[0].id, message: 'Usuário já cadastrado.' });
+    }
 
-    const [result] = await db.query(querySql, [
-      nome,
-      sobrenome,
-      endereco,
-      endereco2,
-      cidade,
-      estado,
-      cep
-    ]);
-
-    res.status(201).json({
-      id: result.insertId,
-      nome,
-      sobrenome,
-      endereco,
-      endereco2,
-      cidade,
-      estado,
-      cep
-    });
+    // Se não existe, cria o registro do usuário
+    const querySql = 'INSERT INTO usuarios (nome, email, telefone) VALUES (?, ?, ?)';
+    const [result] = await db.query(querySql, [nome, email, telefone]);
+    res.status(201).json({ id: result.insertId, nome, email, telefone });
   } catch (error) {
     console.error('Erro ao cadastrar usuário:', error);
-    res.status(500).json({ error: 'Erro ao cadastrar o usuário.' });
+    res.status(500).json({ error: 'Erro ao processar o usuário.' });
   }
 });
 

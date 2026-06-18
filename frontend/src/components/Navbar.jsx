@@ -3,13 +3,16 @@ import { useContext } from "react";
 import { AuthContext } from "../contexts/AuthContext";
 
 function Navbar() {
-  // Puxa o estado de login e a função de logout do contexto global
   const { signed, logout } = useContext(AuthContext);
   const navigate = useNavigate();
 
+  const userName = sessionStorage.getItem("userName");
+  const userRole = sessionStorage.getItem("userRole");
+
   const handleLogout = () => {
-    logout(); // Limpa o localStorage e remove o estado do usuário 
-    navigate("/login"); // Redireciona para o login na hora
+    logout();
+    sessionStorage.clear();
+    navigate("/login");
   };
 
   return (
@@ -54,37 +57,51 @@ function Navbar() {
 
           {signed && (
             <>
-            <li className="nav-item dropdown">
-            <a className="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">Controle (ADM)</a>
+              <li className="nav-item dropdown">
+                <a className="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">Cadastros</a>
 
-            <div className="dropdown-menu">
-              <Link className="dropdown-item" to="/pets">Adicionar Pet (CRUD1)</Link>
-              
-              <Link className="dropdown-item" to="/usuarios">Usuários (CRUD2)</Link>
-
-              <Link className="dropdown-item" to="/crud3">Adoção (CRUD3 + JOIN)</Link>
-            </div>
-          </li>
-          </>
+                <div className="dropdown-menu">
+                  {/* Links públicos para qualquer usuário logado ver */}
+                  <Link className="dropdown-item" to="/pets">Adicionar Pet (CRUD1)</Link>
+                  <Link className="dropdown-item" to="/usuarios">Adicionar Adotante (CRUD2)</Link>
+                  
+                  {userRole === "adm" && (
+                    <Link className="dropdown-item" to="/crud3">Controle de Adoção (CRUD3 + JOIN)</Link>
+                  )}
+                </div>
+              </li>
+            </>
           )}
         </ul>
 
-        {/* Botões do lado direito da Navbar */}
         <Link to="/catalogo" className="btn btn-outline-info me-2" >Animais</Link>
-
         <Link to="/voluntario" className="btn btn-outline-warning me-2">Voluntariado</Link>
 
-        {/* CONTROLE DINÂMICO DE LOGIN/LOGOUT */}
         {signed ? (
-          // Se estiver logado, renderiza o botão de LOGOUT funcional 
-          <button 
-            onClick={handleLogout} 
-            className="btn btn-danger"
-          >
-            Sair
-          </button>
+          <div className="nav-item dropdown d-flex align-items-center" style={{ listStyle: 'none' }}>
+            {/* O texto "Olá, Fulano" vira o botão gatilho do dropdown */}
+            <a 
+              className="nav-link dropdown-toggle fw-bold text-dark px-2" 
+              href="#" 
+              role="button" 
+              data-bs-toggle="dropdown"
+              style={{ cursor: 'pointer', textDecoration: 'none' }}
+            >
+              Olá, {userName ? userName.split(" ")[0] : "Usuário"}!
+            </a>
+            
+            {/* Caixinha suspensa contendo a opção de logout */}
+            <div className="dropdown-menu dropdown-menu-end shadow-sm mt-2" style={{ right: 0, left: 'auto' }}>
+              <button 
+                onClick={handleLogout} 
+                className="dropdown-item text-danger fw-bold d-flex align-items-center gap-2"
+                style={{ cursor: 'pointer' }}
+              >
+                🚪 Sair da Conta
+              </button>
+            </div>
+          </div>
         ) : (
-          // Se não estiver logado, exibe a opção de entrar no sistema
           <Link to="/login" className="btn btn-primary">
             Entrar
           </Link>

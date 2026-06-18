@@ -8,7 +8,6 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Monitora em tempo real se o usuário está logado no Firebase (Trata o F5 de forma nativa!)
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, (userFirebase) => {
       if (userFirebase) {
@@ -16,29 +15,41 @@ export function AuthProvider({ children }) {
           uid: userFirebase.uid,
           email: userFirebase.email
         });
+
+        if (userFirebase.email === 'joaozinho@teste.com') {
+          sessionStorage.setItem("userRole", "adm");
+        } else {
+          sessionStorage.setItem("userRole", "user");
+        }
       } else {
         setUser(null);
+        sessionStorage.removeItem("userRole");
       }
       setLoading(false);
     });
 
-    return () => unsub(); // Limpa o listener ao desmontar
+    return () => unsub(); 
   }, []);
 
   // Função de Login conectada ao Firebase
   async function login(email, password) {
     try {
-      await signInWithEmailAndPassword(auth, email, password);
+      const result = await signInWithEmailAndPassword(auth, email, password);
+      sessionStorage.setItem("userName", result.user.email);
     } catch (error) {
       console.error("Erro ao logar: ", error);
       throw error;
     }
   }
 
-  // Função de Logout conectada ao Firebase
-  async function logout() {
-    await signOut(auth);
-  }
+  const logout = async () => {
+    sessionStorage.clear();
+    try {
+      await signOut(auth);
+    } catch (error) {
+      console.error("Erro ao deslogar: ", error);
+    }
+  };
 
   return (
     <AuthContext.Provider value={{ signed: !!user, user, loading, login, logout }}>

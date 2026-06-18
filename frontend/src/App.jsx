@@ -25,12 +25,12 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/como" element={<Como />} />
+          <Route path="/catalogo" element={<Catalogo />} />
 
           <Route element={<PrivateRoute />}>
             <Route path="/voluntario" element={<Voluntario />} />
             <Route path="/pets" element={<Pets />} />
             <Route path="/usuarios" element={<Usuarios />} />
-            <Route path="/catalogo" element={<Catalogo />} />
             <Route path="/crud3" element={<CRUD3 />} />
           </Route>
 

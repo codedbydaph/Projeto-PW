@@ -5,6 +5,9 @@ import '../style/global.css';
 function Usuarios() {
   const navigate = useNavigate();
 
+  // 🌟 Captura o cargo do usuário logado
+  const userRole = sessionStorage.getItem("userRole");
+
   // Estado para os campos do formulário
   const [formData, setFormData] = useState({
     id: null,
@@ -49,24 +52,24 @@ function Usuarios() {
   };
 
   // Função para Criar ou Atualizar conectando ao Backend (POST & PUT)
- const handleSubmit = async (e) => {
-  e.preventDefault();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-  if (
-    !formData.nome.trim() ||
-    !formData.sobrenome.trim() ||
-    !formData.endereco.trim() ||
-    !formData.cidade.trim() ||
-    !formData.cep.trim()
-  ) {
-    alert("Por favor, preencha os campos corretamente.");
-    return;
-  }
+    if (
+      !formData.nome.trim() ||
+      !formData.sobrenome.trim() ||
+      !formData.endereco.trim() ||
+      !formData.cidade.trim() ||
+      !formData.cep.trim()
+    ) {
+      alert("Por favor, preencha os campos corretamente.");
+      return;
+    }
 
-  if (formData.estado === "Escolher...") {
-    alert("Por favor, selecione um estado válido.");
-    return;
-  }
+    if (formData.estado === "Escolher...") {
+      alert("Por favor, selecione um estado válido.");
+      return;
+    }
 
     try {
       if (formData.id) {
@@ -99,7 +102,6 @@ function Usuarios() {
       }
 
       limparFormulario();
-      //navigate("/concluido");
     } catch (error) {
       console.error("Erro ao salvar dados:", error);
       alert("Erro ao conectar com o servidor.");
@@ -109,7 +111,7 @@ function Usuarios() {
   // Função para carregar os dados no formulário para Edição
   const handleEdit = (adotante) => {
     setFormData(adotante);
-    window.scrollTo({ top: 0, behavior: 'smooth' }); // Sobe a página suavemente para o formulário
+    window.scrollTo({ top: 0, behavior: 'smooth' }); 
   };
 
   // Função para deletar um adotante no Backend (DELETE)
@@ -154,6 +156,7 @@ function Usuarios() {
         <h1>Cadastro do Adotante</h1>
       </header>
 
+      {/* O Formulário de cadastro permanece visível para TODOS */}
       <section className="form-container">
         <h2>{formData.id ? "Editando suas informações" : "Queremos saber mais sobre você"}</h2>
 
@@ -232,7 +235,6 @@ function Usuarios() {
             onChange={handleInputChange}
           />
 
-          {/* Grupo de botões do formulário */}
           <div className="form-buttons-group">
             <button type="submit" className="btn-submit">
               {formData.id ? "Salvar Alterações" : "Confirmar Cadastro"}
@@ -246,40 +248,42 @@ function Usuarios() {
         </form>
       </section>
 
-      {/* Seção para LISTAR os Adotantes cadastrados (READ) */}
-      <section className="form-container list-container">
-        <h2>Adotantes Cadastrados</h2>
-        {adotantes.length === 0 ? (
-          <p className="no-data">Nenhum adotante cadastrado ainda.</p>
-        ) : (
-          <div className="cards-grid">
-            {adotantes.map((adotante) => (
-              <div key={adotante.id} className="adotante-card">
-                <p><strong>Nome:</strong> {adotante.nome} {adotante.sobrenome}</p>
-                <p><strong>Cidade/Estado:</strong> {adotante.cidade} - {adotante.estado}</p>
-                <p><strong>CEP:</strong> {adotante.cep}</p>
-                
-                <div className="card-actions">
-                  <button 
-                    type="button" 
-                    className="btn-edit"
-                    onClick={() => handleEdit(adotante)} 
-                  >
-                    Editar
-                  </button>
-                  <button 
-                    type="button" 
-                    className="btn-delete"
-                    onClick={() => handleDelete(adotante.id)} 
-                  >
-                    Excluir
-                  </button>
+      {/* 👑 PRIVATIZAÇÃO: A seção inteira com os cards cadastrados (READ/UPDATE/DELETE) só renderiza para o ADM */}
+      {userRole === "adm" && (
+        <section className="form-container list-container">
+          <h2>Adotantes Cadastrados</h2>
+          {adotantes.length === 0 ? (
+            <p className="no-data">Nenhum adotante cadastrado ainda.</p>
+          ) : (
+            <div className="cards-grid">
+              {adotantes.map((adotante) => (
+                <div key={adotante.id} className="adotante-card">
+                  <p><strong>Nome:</strong> {adotante.nome} {adotante.sobrenome}</p>
+                  <p><strong>Cidade/Estado:</strong> {adotante.cidade} - {adotante.estado}</p>
+                  <p><strong>CEP:</strong> {adotante.cep}</p>
+                  
+                  <div className="card-actions">
+                    <button 
+                      type="button" 
+                      className="btn-edit"
+                      onClick={() => handleEdit(adotante)} 
+                    >
+                      Editar
+                    </button>
+                    <button 
+                      type="button" 
+                      className="btn-delete"
+                      onClick={() => handleDelete(adotante.id)} 
+                    >
+                      Excluir
+                    </button>
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </section>
+              ))}
+            </div>
+          )}
+        </section>
+      )}
 
       <footer>
         <p>Entre em contato: <a href="mailto:CafofoDosPeludos@gmail.com">CafofoDosPeludos@gmail.com</a></p>

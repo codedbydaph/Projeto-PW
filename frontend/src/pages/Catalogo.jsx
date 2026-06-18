@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useNavigate } from "react";
 import { Link } from "react-router-dom";
 import "../style/global.css";
 
@@ -39,6 +39,48 @@ function Catalogo() {
   for (let i = 0; i < pets.length; i += 4) {
     petsPorLinha.push(pets.slice(i, i + 4));
   }
+
+  async function handleSolicitarAdocao(petId) {
+  const userEmail = sessionStorage.getItem("userEmail");
+  const userName = sessionStorage.getItem("userName");
+
+  // bloqueia a ação se não tiver login nenhum ativo
+  if (!userEmail) {
+    alert("Você precisa estar logado para solicitar uma adoção!");
+    return;
+  }
+
+  if (!window.confirm("Deseja enviar uma solicitação de adoção para este pet?")) {
+    return;
+  }
+
+  try {
+    // garante o vínculo do usuário do Gmail no MySQL (CRUD 2)
+    const resUsuario = await fetch("http://localhost:3000/api/usuarios", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ nome: userName, email: userEmail, telefone: "(00) 00000-0000" })
+    });
+
+    const dadosUsuario = await resUsuario.json();
+    const usuarioId = resUsuario.ok ? dadosUsuario.id : dadosUsuario.idIdExistente;
+
+    // envia a solicitação para a tabela de adocoes (CRUD 3)
+    const hoje = new Date().toISOString().split('T')[0];
+    const resAdocao = await fetch("http://localhost:3000/api/adocoes", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ petId: Number(petId), usuarioId: Number(usuarioId), dataAdocao: hoje })
+    });
+
+    if (resAdocao.ok) {
+      alert("✨ Solicitação enviada com sucesso! Ela foi encaminhada para a aprovação do Administrador.");
+      carregarPets(); 
+    }
+  } catch (error) {
+    console.error(error);
+  }
+}
 
   return (
     <>
@@ -88,12 +130,9 @@ function Catalogo() {
                     {pet.descricao}
                   </p>
 
-                  <Link
-                    className="btn btn-info"
-                    to="/usuarios"
-                  >
-                    Quero Adotar
-                  </Link>
+                  <button className="btn btn-info w-100 fw-bold text-white mt-2" onClick={() => handleSolicitarAdocao(pet.id)}>
+                      Quero Adotar
+                  </button>
                 </div>
               </div>
             ))}

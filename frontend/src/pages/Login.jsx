@@ -5,6 +5,9 @@ import { useState, useContext } from 'react';
 import { AuthContext } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
+import { auth } from "../services/firebaseConnection";
+import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+
 function Login() {
   const { login } = useContext(AuthContext);
   const [email, setEmail] = useState('');
@@ -13,7 +16,7 @@ function Login() {
 
   const navigate = useNavigate();
 
-  // função assíncrona para esperar a resposta do Firebase
+  // SUA FUNÇÃO ATUAL (Mantida intacta)
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
@@ -25,11 +28,9 @@ function Login() {
 
     try {
       await login(email, password);
-      
       navigate('/catalogo');
     } catch (err) {
       console.error(err);
-      
       if (
         err.code === 'auth/invalid-credential' || 
         err.code === 'auth/wrong-password' || 
@@ -41,6 +42,27 @@ function Login() {
       } else {
         setError('Falha ao conectar com o serviço de autenticação. Verifica a tua rede.');
       }
+    }
+  };
+
+  // 🌟 NOVA FUNÇÃO: LOGIN COM GOOGLE
+  const handleGoogleLogin = async () => {
+    setError('');
+    const provider = new GoogleAuthProvider();
+    try {
+      // Abre o pop-up nativo do Google
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
+
+      // Guarda os dados cruciais da sessão para usar no "Quero Adotar" do Catálogo
+      sessionStorage.setItem("userEmail", user.email);
+      sessionStorage.setItem("userName", user.displayName);
+
+      // Redireciona para o catálogo igual ao login tradicional
+      navigate('/catalogo');
+    } catch (err) {
+      console.error(err);
+      setError('Falha ao autenticar com o Google. Tente novamente.');
     }
   };
 
@@ -66,11 +88,62 @@ function Login() {
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            placeholder="Introduz a tua senha"
+            placeholder="Sua senha"
           />
         </div>
 
-        <button type="submit" className="btn-login">Entrar</button>
+        <button type="submit">Entrar</button>
+
+        {/* 🌟 DIVISOR MODERNO ESTILO FACEBOOK/GOOGLE */}
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          textAlign: 'center',
+          margin: '25px 0',
+          color: '#8a8d91' // Cinza suave do Facebook
+        }}>
+          <div style={{ flex: 1, height: '1px', backgroundColor: '#ced0d4' }}></div>
+          <span style={{ padding: '0 15px', fontSize: '14px', fontWeight: '500' }}>ou</span>
+          <div style={{ flex: 1, height: '1px', backgroundColor: '#ced0d4' }}></div>
+        </div>
+        
+        {/* 🌟 BOTÃO DO GOOGLE TOTALMENTE ATUALIZADO */}
+        <button 
+          type="button" 
+          onClick={handleGoogleLogin}
+          style={{
+            backgroundColor: '#ffffff',
+            color: '#1c1e21', // Cor de texto escura padrão de acessibilidade
+            border: '1px solid #ced0d4', // Borda sutil padrão Meta/Facebook Design
+            borderRadius: '6px', // Cantos levemente arredondados modernos
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '12px',
+            cursor: 'pointer',
+            width: '100%',
+            height: '44px', // Altura padrão de botões mobile e web modernos
+            fontSize: '15px',
+            fontWeight: '600',
+            transition: 'background-color 0.2s, box-shadow 0.2s',
+            boxShadow: '0 1px 2px rgba(0, 0, 0, 0.05)'
+          }}
+          onMouseOver={(e) => {
+            e.currentTarget.style.backgroundColor = '#f5f6f7';
+            e.currentTarget.style.boxShadow = '0 1px 3px rgba(0, 0, 0, 0.1)';
+          }}
+          onMouseOut={(e) => {
+            e.currentTarget.style.backgroundColor = '#ffffff';
+            e.currentTarget.style.boxShadow = '0 1px 2px rgba(0, 0, 0, 0.05)';
+          }}
+        >
+          <img 
+            src="../public/img/google.png" 
+            alt="Google" 
+            style={{ width: "20px", height: "20px" }} 
+          />
+          Entrar com o Google
+        </button>
       </form>
     </div>
   );

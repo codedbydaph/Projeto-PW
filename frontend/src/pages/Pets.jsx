@@ -8,6 +8,8 @@ function Pets() {
   
   const fileInputRef = useRef(null);
 
+  const userRole = sessionStorage.getItem("userRole");
+
   const [formData, setFormData] = useState({
       id: null,
       imagem: null, 
@@ -66,7 +68,7 @@ function Pets() {
       !formData.descricao.trim()
     ) {
       alert("Por favor, preencha os campos corretamente. Não deixe apenas espaços em branco.");
-      return; // O return faz a função parar aqui e não continua para o backend
+      return; 
     }
 
     const data = new FormData();
@@ -159,6 +161,7 @@ function Pets() {
         <h1>Cadastro de Pets</h1>
       </header>
 
+      {/* O Formulário de cadastro permanece visível para TODOS */}
       <section className="form-container">
         <h2>
           {formData.id
@@ -264,63 +267,66 @@ function Pets() {
         </form>
       </section>
 
-      <section className="form-container list-container">
-        <h2>Pets Cadastrados</h2>
+      {/* 👑 PRIVATIZAÇÃO: A seção inteira com a listagem e ações de alteração só monta se for o ADM */}
+      {userRole === "adm" && (
+        <section className="form-container list-container">
+          <h2>Pets Cadastrados</h2>
 
-        {pets.length === 0 ? (
-          <p className="no-data">
-            Nenhum pet cadastrado.
-          </p>
-        ) : (
-          <div className="cards-grid">
-            {pets.map((pet) => (
-              <div
-                key={pet.id}
-                className="adotante-card"
-              >
-                {pet.imagem && (
-                  <img 
-                    src={pet.imagem} 
-                    alt={`Foto de ${pet.nome}`} 
-                    style={{ 
-                      width: "100%", 
-                      height: "200px", 
-                      objectFit: "cover", 
-                      borderRadius: "8px",
-                      marginBottom: "12px"
-                    }} 
-                  />
-                )}
+          {pets.length === 0 ? (
+            <p className="no-data">
+              Nenhum pet cadastrado.
+            </p>
+          ) : (
+            <div className="cards-grid">
+              {pets.map((pet) => (
+                <div
+                  key={pet.id}
+                  className="adotante-card"
+                >
+                  {pet.imagem && (
+                    <img 
+                      src={pet.imagem} 
+                      alt={`Foto de ${pet.nome}`} 
+                      style={{ 
+                        width: "100%", 
+                        height: "200px", 
+                        objectFit: "cover", 
+                        borderRadius: "8px",
+                        marginBottom: "12px"
+                      }} 
+                    />
+                  )}
 
-                <p><strong>Nome:</strong> {pet.nome}</p>
-                <p><strong>Espécie:</strong> {pet.especie}</p>
-                <p><strong>Idade:</strong> {pet.idade}</p>
-                <p><strong>Descrição:</strong> {pet.descricao}</p>
-                <p><strong>Status:</strong> {pet.status}</p>
+                  <p><strong>Nome:</strong> {pet.nome}</p>
+                  <p><strong>Espécie:</strong> {pet.especie}</p>
+                  <p><strong>Idade:</strong> {pet.idade}</p>
+                  <p><strong>Descrição:</strong> {pet.descricao}</p>
+                  <p><strong>Status:</strong> {pet.status}</p>
 
-                <div className="card-actions">
-                  <button
-                    type="button"
-                    className="btn-edit"
-                    onClick={() => handleEdit(pet)}
-                  >
-                    Editar
-                  </button>
+                  <div className="card-actions">
+                    <button
+                      type="button"
+                      className="btn-edit"
+                      onClick={() => handleEdit(pet)}
+                    >
+                      Editar
+                    </button>
 
-                  <button
-                    type="button"
-                    className="btn-delete"
-                    onClick={() => handleDelete(pet.id)}
-                  >
-                    Excluir
-                  </button>
+                    <button
+                      type="button"
+                      className="btn-delete"
+                      onClick={() => handleDelete(pet.id)}
+                    >
+                      Excluir
+                    </button>
+                  </div>
+
                 </div>
-
-              </div>
-            ))}
-          </div>
-        )}
-      </section>
+              ))}
+            </div>
+          )}
+        </section>
+      )}
 
       <footer>
         <p>
