@@ -11,31 +11,27 @@ function Adocoes() {
   const [availablePets, setAvailablePets] = useState([]);
   const [availableUsuarios, setAvailableUsuarios] = useState([]);
 
-  // URL base do seu backend Node.js
+  // backend Node.js
   const API_URL = "http://localhost:3000/api";
 
-  // 🔌 CARREGAR DADOS DO BANCO LOGO AO ENTRAR NA TELA
   useEffect(() => {
     carregarDados();
   }, []);
 
   const carregarDados = async () => {
     try {
-      // 1. Busca os pets do MySQL
       const resPets = await fetch(`${API_URL}/pets`);
       if (resPets.ok) {
         const dataPets = await resPets.json();
         setAvailablePets(dataPets);
       }
 
-      // 2. Busca as adoções com o JOIN real
       const resAdocoes = await fetch(`${API_URL}/relatorio-join`);
       if (resAdocoes.ok) {
         const dataAdocoes = await resAdocoes.json();
         setAdocoes(dataAdocoes);
       }
 
-      // 3. Busca os usuários REAIS gravados pelo CRUD 2
       const resUsuarios = await fetch(`${API_URL}/usuarios`);
       if (resUsuarios.ok) {
         const dataUsuarios = await resUsuarios.json();
@@ -48,7 +44,6 @@ function Adocoes() {
     }
   };
 
-  // FILTRAR PETS ADOTADOS
   const petsDisponiveisParaAdocao = availablePets.filter((pet) => {
     // Procura se o id deste pet já está registrado em alguma adoção na tabela
     const jaAdotado = adocoes.some((adocao) => Number(adocao.petId) === Number(pet.id));
