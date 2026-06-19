@@ -137,7 +137,6 @@ app.post('/api/usuarios', async (req, res) => {
     const [usuariosExistentes] = await db.query(queryVerificar, [email]);
 
     if (usuariosExistentes.length > 0) {
-      console.log(`Usuário com o e-mail ${email} já existe. Retornando ID existente.`);
       return res.status(200).json({ id: usuariosExistentes[0].id });
     }
 
@@ -214,11 +213,10 @@ app.delete('/api/usuarios/:id', async (req, res) => {
 // CRUD 3
 
 app.post('/api/adocoes', async (req, res) => {
-  // O front envia camelCase (petId, usuarioId, dataAdocao)
   const { petId, usuarioId, dataAdocao } = req.body; 
   
   try {
-    const querySql = 'INSERT INTO adocoes (pet_id, usuario_id, data_adocao) VALUES (?, ?, ?)';
+    const querySql = 'INSERT INTO adocoes (petId, usuarioId, dataAdocao) VALUES (?, ?, ?)';
     const [result] = await db.query(querySql, [petId, usuarioId, dataAdocao]);
     res.status(201).json({ id: result.insertId });
   } catch (error) {

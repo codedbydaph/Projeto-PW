@@ -51,61 +51,67 @@ function Catalogo() {
   }
 
   async function confirmarAdocao() {
-  const userEmail = sessionStorage.getItem("userEmail"); 
-  const userName = sessionStorage.getItem("userName") || "Usuário";
+    const userEmail = sessionStorage.getItem("userEmail"); 
+    const userName = sessionStorage.getItem("userName") || "Usuário";
 
-  if (!userEmail) {
-    alert("Erro: E-mail do usuário não encontrado na sessão. Faça login novamente.");
-    return;
-  }
-
-  try {
-    const resUsuario = await fetch("http://localhost:3000/api/usuarios", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ 
-        nome: userName, 
-        email: userEmail, 
-        sobrenome: "",
-        telefone: "(00) 00000-0000",
-        endereco: "Não informado",
-        cidade: "Não informado",
-        estado: "DF",
-        cep: "00000-000"
-      })
-    });
-
-    const dadosUsuario = await resUsuario.json();
-    const usuarioId = dadosUsuario.id;
-
-    if (!usuarioId) {
-      console.error("Não foi possível obter o ID do usuário.");
+    if (!userEmail) {
+      alert("Erro: E-mail do usuário não encontrado na sessão. Faça login novamente.");
       return;
     }
 
-    const hoje = new Date().toISOString().split('T')[0];
+    try {
+      const resUsuario = await fetch("http://localhost:3000/api/usuarios", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ 
+          nome: userName, 
+          email: userEmail, 
+          sobrenome: "",
+          telefone: "(00) 00000-0000",
+          endereco: "Não informado",
+          cidade: "Não informado",
+          estado: "DF",
+          cep: "00000-000"
+        })
+      });
 
-    // 2. Registra a adoção vinculando ao ID correto
-    const resAdocao = await fetch("http://localhost:3000/api/adocoes", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ 
-        petId: Number(petSelecionado.id), 
-        usuarioId: Number(usuarioId), 
-        dataAdocao: hoje 
-      })
-    });
+      if (!resUsuario.ok) {
+        throw new Error("Falha ao registrar ou buscar usuário no servidor.");
+      }
 
-    if (resAdocao.ok) {
-      setModalAberto(false);
-      setMensagemSucesso(`✨ Solicitação enviada com sucesso! O ${petSelecionado.nome} foi encaminhado para aprovação.`);
-      setTimeout(() => setMensagemSucesso(""), 4000);
-      carregarPets(); 
+      const dadosUsuario = await resUsuario.json();
+      const usuarioId = dadosUsuario.id;
+
+      if (!usuarioId) {
+        console.error("Não foi possível obter o ID do usuário.");
+        alert("Erro ao processar sua identidade de adotante. Tente novamente.");
+        return;
+      }
+
+      const hoje = new Date().toISOString().split('T')[0];
+      const resAdocao = await fetch("http://localhost:3000/api/adocoes", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ 
+          petId: Number(petSelecionado.id), 
+          usuarioId: Number(usuarioId), 
+          dataAdocao: hoje 
+        })
+      });
+
+      if (resAdocao.ok) {
+        setModalAberto(false);
+        setMensagemSucesso(`✨ Solicitação enviada com sucesso! O ${petSelecionado.nome} foi encaminhado para aprovação.`);
+        setTimeout(() => setMensagemSucesso(""), 4000);
+        carregarPets(); 
+      } else {
+        throw new Error("Falha ao registrar a adoção no servidor.");
+      }
+    } catch (error) {
+      console.error("Erro no fluxo de adoção:", error);
+      alert("Houve um erro ao processar sua adoção. Verifique o console do servidor.");
     }
-  } catch (error) {
-    console.error("Erro no fluxo de adoção:", error);
   }
-}
 
   return (
     <>
