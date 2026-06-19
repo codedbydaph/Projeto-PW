@@ -205,7 +205,7 @@ npx cypress run
 
 ## Estrutura dos Testes
 
-text
+<pre>
 backend/
 └── tests/
     ├── pets.test.js
@@ -216,7 +216,7 @@ frontend/
 └── cypress/
     └── e2e/
         └── sistema.cy.js
-
+</pre>
 
 ---
 
