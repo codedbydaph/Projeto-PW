@@ -35,17 +35,17 @@ Siga o passo a passo abaixo para configurar os ambientes de desenvolvimento.
 3. Esse script criará automaticamente o banco `cafofo_db`, a estrutura correta das tabelas e uma carga inicial de dados de teste.
 
 ### 2. Configuração das Variáveis de Ambiente (`.env`)
-Como os arquivos de credenciais são ocultados por boas práticas de segurança (`.gitignore`), você precisará criar um arquivo chamado **`.env`** dentro da pasta `/backend` contendo a seguinte estrutura:
+Como os arquivos de credenciais são ocultados por boas práticas de segurança (`.gitignore`), você precisará criar dois arquivo chamados **`.env`** um dentro da pasta `/backend` e outro na `/frontend` contendo a seguinte estrutura:
 
 ```env
-# 🔌 CONFIGURAÇÕES DO BACKEND (NODE / EXPRESS)
+# Conteudo .env backend
 DB_HOST=localhost
 DB_USER=seu_usuario_mysql
 DB_PASSWORD=sua_senha_mysql
 DB_NAME=cafofo_db
 PORT=3000
 
-# 🔥 CONFIGURAÇÕES DO FRONTEND (FIREBASE)
+# Conteudo .env frontend
 VITE_FIREBASE_API_KEY=AIzaSyDv2uSL9p-ijlC-O47SxjNn28qUvq2VdII
 VITE_FIREBASE_AUTH_DOMAIN=cafofo-web.firebaseapp.com
 VITE_FIREBASE_PROJECT_ID=cafofo-web
