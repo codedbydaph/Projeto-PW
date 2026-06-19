@@ -57,19 +57,21 @@ function Navbar() {
 
           {signed && (
             <>
-              <li className="nav-item dropdown">
-                <a className="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">Cadastros</a>
-
-                <div className="dropdown-menu">
-                  {/* Links públicos para qualquer usuário logado ver */}
-                  <Link className="dropdown-item" to="/pets">Adicionar Pet (CRUD1)</Link>
-                  <Link className="dropdown-item" to="/usuarios">Adicionar Adotante (CRUD2)</Link>
-                  
                   {userRole === "adm" && (
+                    <li className="nav-item dropdown">
+                    <a className="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">Cadastros</a>
+
+                    <div className="dropdown-menu">
+                      {/* Links públicos para qualquer usuário logado ver */}
+                    <Link className="dropdown-item" to="/pets">Adicionar Pet (CRUD1)</Link>
+                    <Link className="dropdown-item" to="/usuarios">Adicionar Adotante (CRUD2)</Link>
+                  
                     <Link className="dropdown-item" to="/crud3">Controle de Adoção (CRUD3 + JOIN)</Link>
+
+                    </div>
+                  </li>
                   )}
-                </div>
-              </li>
+                
             </>
           )}
         </ul>

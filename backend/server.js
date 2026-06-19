@@ -250,21 +250,22 @@ app.delete('/api/adocoes/:id', async (req, res) => {
 
 // RELATÓRIO COM JOIN 
 
+// RELATÓRIO COM JOIN (Corrigido para usar as colunas exatas do seu MySQL)
 app.get('/api/relatorio-join', async (req, res) => {
   try {
     const queryJoin = `
       SELECT 
         adocoes.id AS id,
-        adocoes.pet_id AS petId,
-        adocoes.usuario_id AS usuarioId,
-        adocoes.data_adocao AS data,
+        adocoes.petId AS petId,       
+        adocoes.usuarioId AS usuarioId,
+        adocoes.dataAdocao AS data,    
         pets.nome AS nomePet,
         pets.especie AS especiePet,
         usuarios.nome AS nomeAdotante,
         usuarios.sobrenome AS sobrenomeAdotante
       FROM adocoes
-      INNER JOIN pets ON adocoes.pet_id = pets.id
-      INNER JOIN usuarios ON adocoes.usuario_id = usuarios.id
+      INNER JOIN pets ON adocoes.petId = pets.id        
+      INNER JOIN usuarios ON adocoes.usuarioId = usuarios.id
     `;
     const [rows] = await db.query(queryJoin);
     res.json(rows);

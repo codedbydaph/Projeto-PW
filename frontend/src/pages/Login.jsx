@@ -45,7 +45,6 @@ function Login() {
     }
   };
 
-  // 🌟 NOVA FUNÇÃO: LOGIN COM GOOGLE
   const handleGoogleLogin = async () => {
     setError('');
     const provider = new GoogleAuthProvider();
@@ -138,7 +137,7 @@ function Login() {
           }}
         >
           <img 
-            src="../public/img/google.png" 
+            src="/img/google.png" 
             alt="Google" 
             style={{ width: "20px", height: "20px" }} 
           />
