@@ -97,3 +97,136 @@ O sistema foi atualizado para implementar um controle de permissões baseado em 
 ### 👤 2. Administrador (Login Tradicional)
 * **Gerenciamento Total (CRUDs 1, 2 e 3):** Possui privilégios totais de escrita, alteração e exclusão física de registros de Pets e Adotantes.
 * **Acesso ao Histórico Geral:** É o único nível de acesso que visualiza os blocos ocultos de listagem no sistema e o menu de **Adoções (CRUD 3 + JOIN)** no dropdown da Navbar, onde são auditadas todas as solicitações recebidas a partir do catálogo.
+
+---
+
+# 📋 Testes de Software
+
+O projeto possui uma suíte de testes automatizados desenvolvida com base nos conceitos de Teste de Software estudados na disciplina, contemplando testes de integração (Jest + Supertest) e testes de sistema (Cypress).
+
+## Ferramentas Utilizadas
+
+### Testes de Integração
+
+* Jest
+* Supertest
+
+### Testes de Sistema (End-to-End)
+
+* Cypress
+
+---
+
+## Executando os Testes de Integração
+
+Os testes de integração validam o funcionamento das rotas da API e a comunicação entre Backend e Banco de Dados.
+
+### Instalação
+
+bash
+cd backend
+
+npm install --save-dev jest supertest cross-env
+
+
+### Execução
+
+bash
+npm test
+
+
+### Relatório de Cobertura
+
+Ao executar os testes, o Jest gera automaticamente um relatório de cobertura na pasta:
+
+bash
+backend/coverage
+
+
+O relatório apresenta métricas de:
+
+* Statements Coverage
+* Functions Coverage
+* Branch Coverage
+* Lines Coverage
+
+---
+
+## Casos de Teste de Integração
+
+| Código | Descrição                                 | Técnica                                       |
+| ------ | ----------------------------------------- | --------------------------------------------- |
+| CTI01  | Listar pets cadastrados                   | Caixa-Preta – Teste de Caso de Uso            |
+| CTI02  | Cadastrar pet com dados válidos           | Caixa-Preta – Particionamento de Equivalência |
+| CTI03  | Cadastrar pet com campo obrigatório vazio | Caixa-Preta – Particionamento de Equivalência |
+| CTI04  | Atualizar dados de um pet existente       | Caixa-Branca – Cobertura de Instrução         |
+| CTI05  | Excluir pet cadastrado                    | Caixa-Branca – Cobertura de Instrução         |
+| CTI06  | Cadastrar adotante com CEP válido         | Caixa-Preta – Análise de Valor Limite         |
+| CTI07  | Gerar relatório de adoções (JOIN)         | Caixa-Branca – Cobertura de Instrução         |
+
+---
+
+## Executando os Testes de Sistema
+
+Os testes de sistema simulam a interação real do usuário com a aplicação através do navegador.
+
+### Instalação
+
+bash
+cd frontend
+
+npm install --save-dev cypress
+
+
+### Execução em modo gráfico
+
+bash
+npx cypress open
+
+
+### Execução via terminal
+
+bash
+npx cypress run
+
+
+---
+
+## Casos de Teste de Sistema
+
+| Código | Descrição                                        | Técnica                                       |
+| ------ | ------------------------------------------------ | --------------------------------------------- |
+| CTS01  | Login completo no sistema                        | Caixa-Preta – Teste de Caso de Uso            |
+| CTS02  | Cadastro de adotante com dados válidos           | Caixa-Preta – Particionamento de Equivalência |
+| CTS03  | Cadastro de adotante com campo obrigatório vazio | Caixa-Preta – Particionamento de Equivalência |
+| CTS04  | Navegação entre páginas principais               | Caixa-Preta – Teste de Caso de Uso            |
+
+---
+
+## Estrutura dos Testes
+
+text
+backend/
+└── tests/
+    ├── pets.test.js
+    ├── usuarios.test.js
+    └── relatorio.test.js
+
+frontend/
+└── cypress/
+    └── e2e/
+        └── sistema.cy.js
+
+
+---
+
+## Objetivos dos Testes
+
+Os testes foram desenvolvidos com o objetivo de:
+
+* Validar o correto funcionamento das rotas da API.
+* Garantir a integração entre aplicação e banco de dados MySQL.
+* Detectar falhas de validação de entrada.
+* Verificar o fluxo completo de utilização do sistema.
+* Aplicar técnicas de teste de caixa-preta e caixa-branca estudadas em sala de aula.
+* Aumentar a confiabilidade e a qualidade do software.
