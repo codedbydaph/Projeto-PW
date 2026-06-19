@@ -46,6 +46,9 @@ app.get('/api/pets', async (req, res) => {
 // Cadastrar Pet
 app.post('/api/pets', upload.single('imagem'), async (req, res) => {
   const { nome, especie, idade, descricao, status } = req.body;
+if (!nome || !especie || !idade || !descricao || !status) {
+  return res.status(400).json({ error: 'Campos obrigatórios não preenchidos.' });
+}
   
   const imagemPath = req.file ? `/uploads/${req.file.filename}` : null;
 
@@ -275,6 +278,11 @@ app.get('/api/relatorio-join', async (req, res) => {
   }
 });
 
-app.listen(PORT, () => {
-  console.log(`Servidor rodando em: http://localhost:${PORT}`);
-});
+if (process.env.NODE_ENV !== 'test') {
+  app.listen(PORT, () => {
+    console.log(`Servidor rodando em: http://localhost:${PORT}`);
+  });
+}
+
+export { db };
+export default app;
